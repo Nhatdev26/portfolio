@@ -58,6 +58,8 @@ export const publicApi = {
 export const adminApi = {
   get: <T>(path: string, token: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: "GET", token }),
+  put: <T>(path: string, token: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(path, { ...options, body, method: "PUT", token }),
   post: <T>(path: string, token: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, body, method: "POST", token })
 };

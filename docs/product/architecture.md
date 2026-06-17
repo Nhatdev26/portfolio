@@ -44,7 +44,7 @@ Admin Dashboard:
 - Routes live under the admin React layout.
 - Login route is public.
 - CMS routes require authenticated admin state once auth is implemented.
-- Calls `/admin/*` APIs with an access token once auth is implemented.
+- Calls `/api/admin/*` APIs with an access token.
 
 Backend API:
 
@@ -114,8 +114,9 @@ Current auth/session behavior:
 - The backend issues signed JWT access tokens and opaque refresh tokens.
 - Refresh token hashes are stored in PostgreSQL.
 - The frontend stores the local MVP session in browser local storage.
+- Frontend `/admin/*` stays SPA-owned; backend admin APIs use `/api/admin/**`.
 - Production hardening should revisit HTTP-only cookies, CSRF policy, and API
-  route separation for backend admin APIs.
+  route hardening.
 
 ## Validation Ladder
 

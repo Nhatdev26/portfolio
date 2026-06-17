@@ -32,7 +32,7 @@
 
 ## Public Backend APIs
 
-- `GET /public/profile`
+- `GET /public/profile?language=EN|VI`
 - `GET /public/projects`
 - `GET /public/projects/{slug}`
 - `GET /public/notes`
@@ -44,31 +44,41 @@
 
 ## Admin Backend APIs
 
+Current path rule:
+
+- Backend admin CMS APIs use `/api/admin/**`.
+- Frontend admin UI routes keep `/admin/*`.
+
+Profile:
+
+- `GET /api/admin/profile`
+- `PUT /api/admin/profile`
+
 Projects:
 
-- `POST /admin/projects`
-- `GET /admin/projects`
-- `GET /admin/projects/{id}`
-- `PUT /admin/projects/{id}`
-- `PATCH /admin/projects/{id}/status`
-- `DELETE /admin/projects/{id}`
+- `POST /api/admin/projects`
+- `GET /api/admin/projects`
+- `GET /api/admin/projects/{id}`
+- `PUT /api/admin/projects/{id}`
+- `PATCH /api/admin/projects/{id}/status`
+- `DELETE /api/admin/projects/{id}`
 
 Technical notes:
 
-- `POST /admin/notes`
-- `GET /admin/notes`
-- `GET /admin/notes/{id}`
-- `PUT /admin/notes/{id}`
-- `PATCH /admin/notes/{id}/status`
-- `DELETE /admin/notes/{id}`
+- `POST /api/admin/notes`
+- `GET /api/admin/notes`
+- `GET /api/admin/notes/{id}`
+- `PUT /api/admin/notes/{id}`
+- `PATCH /api/admin/notes/{id}/status`
+- `DELETE /api/admin/notes/{id}`
 
 Media and audit:
 
-- `POST /admin/media-assets`
-- `GET /admin/media-assets`
-- `PUT /admin/media-assets/{id}`
-- `DELETE /admin/media-assets/{id}`
-- `GET /admin/audit-logs`
+- `POST /api/admin/media-assets`
+- `GET /api/admin/media-assets`
+- `PUT /api/admin/media-assets/{id}`
+- `DELETE /api/admin/media-assets/{id}`
+- `GET /api/admin/audit-logs`
 
 Auth:
 
@@ -100,6 +110,19 @@ The admin login story exposes:
 
 `/auth/me` requires `Authorization: Bearer <accessToken>`.
 
-Backend `/admin/**` routes require authentication. Frontend `/admin/*` routes
-remain SPA routes served by the frontend container; future same-origin backend
-admin APIs need a non-conflicting proxy/path decision before CRUD work lands.
+Backend `/admin/**` routes require authentication for legacy safety. Frontend
+`/admin/*` routes remain SPA routes served by the frontend container.
+
+## Current Phase 3 Profile CMS
+
+The profile CMS story exposes:
+
+- `GET /public/profile?language=EN|VI`
+- `GET /api/admin/profile`
+- `PUT /api/admin/profile`
+
+`/api/admin/profile` requires `Authorization: Bearer <accessToken>`.
+
+The public profile API returns only ACTIVE profile data, ACTIVE localized
+content for the requested language, and ACTIVE social links. Missing active
+profile/content returns HTTP 404.

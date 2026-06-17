@@ -5,8 +5,10 @@ import { AdminLayout } from "../layouts/AdminLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
 import { LoginPage } from "../pages/admin/LoginPage";
+import { ProfilePage } from "../pages/admin/ProfilePage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
+import { AboutPage } from "../pages/public/AboutPage";
 import { HomePage } from "../pages/public/HomePage";
 
 export const router = createBrowserRouter([
@@ -16,7 +18,7 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: "about", element: <PlaceholderPage title="About" /> },
+      { path: "about", element: <AboutPage /> },
       { path: "projects", element: <PlaceholderPage title="Projects" /> },
       { path: "projects/:slug", element: <PlaceholderPage title="Project detail" /> },
       { path: "notes", element: <PlaceholderPage title="Technical notes" /> },
@@ -37,7 +39,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <AdminDashboardPage /> },
-          { path: "profile", element: <PlaceholderPage title="Profile CMS" /> },
+          { path: "profile", element: <ProfilePage /> },
           { path: "projects", element: <PlaceholderPage title="Projects CMS" /> },
           { path: "notes", element: <PlaceholderPage title="Notes CMS" /> },
           { path: "technologies", element: <PlaceholderPage title="Technologies CMS" /> },
