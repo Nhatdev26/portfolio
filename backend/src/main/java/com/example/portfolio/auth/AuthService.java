@@ -5,12 +5,16 @@ import com.example.portfolio.auth.dto.AuthResponse;
 import com.example.portfolio.auth.dto.CurrentUserResponse;
 import com.example.portfolio.auth.dto.LoginRequest;
 import com.example.portfolio.auth.dto.LogoutResponse;
+import com.example.portfolio.audit.AuditResult;
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.user.User;
 import com.example.portfolio.user.UserRepository;
 import com.example.portfolio.user.UserStatus;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +30,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final AuditService auditService;
     private final Clock clock;
 
     public AuthService(
@@ -33,21 +38,31 @@ public class AuthService {
             RefreshTokenRepository refreshTokenRepository,
             PasswordEncoder passwordEncoder,
             TokenService tokenService,
+            AuditService auditService,
             Clock clock) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
+        this.auditService = auditService;
         this.clock = clock;
     }
 
     @Transactional
     public AuthResponse login(LoginRequest request, String clientIp) {
-        User user = userRepository.findByEmailIgnoreCaseAndDeletedAtIsNull(request.email().trim())
+        String email = request.email().trim();
+        Optional<User> authenticated = userRepository.findByEmailIgnoreCaseAndDeletedAtIsNull(email)
                 .filter(candidate -> candidate.getStatus() == UserStatus.ACTIVE)
-                .filter(candidate -> passwordEncoder.matches(request.password(), candidate.getPasswordHash()))
-                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS));
+                .filter(candidate -> passwordEncoder.matches(request.password(), candidate.getPasswordHash()));
+        if (authenticated.isEmpty()) {
+            auditService.authEvent(null, email, "LOGIN_FAILURE", AuditResult.FAILURE,
+                    Map.of("reason", "invalid_credentials"), clientIp);
+            throw new ApiException(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
+        }
 
+        User user = authenticated.get();
+        auditService.authEvent(user.getId(), user.getEmail(), "LOGIN_SUCCESS", AuditResult.SUCCESS,
+                Map.of("email", user.getEmail()), clientIp);
         return issueSession(user, clientIp);
     }
 
@@ -69,11 +84,31 @@ public class AuthService {
                 .map(token -> {
                     if (token.getRevokedAt() == null) {
                         revoke(token, clientIp);
+                        User user = token.getUser();
+                        auditService.authEvent(
+                                user == null ? null : user.getId(),
+                                user == null ? null : user.getEmail(),
+                                "LOGOUT",
+                                AuditResult.SUCCESS,
+                                Map.of("revoked", true),
+                                clientIp);
                         return new LogoutResponse(true);
                     }
+                    User user = token.getUser();
+                    auditService.authEvent(
+                            user == null ? null : user.getId(),
+                            user == null ? null : user.getEmail(),
+                            "LOGOUT",
+                            AuditResult.FAILURE,
+                            Map.of("reason", "already_revoked"),
+                            clientIp);
                     return new LogoutResponse(false);
                 })
-                .orElseGet(() -> new LogoutResponse(false));
+                .orElseGet(() -> {
+                    auditService.authEvent(null, null, "LOGOUT", AuditResult.FAILURE,
+                            Map.of("reason", "unknown_refresh_token"), clientIp);
+                    return new LogoutResponse(false);
+                });
     }
 
     public CurrentUserResponse currentUser(AuthenticatedUser user) {

@@ -1,5 +1,6 @@
 package com.example.portfolio.profile;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.profile.dto.ProfileAdminResponse;
 import com.example.portfolio.profile.dto.ProfileContentRequest;
@@ -25,16 +26,19 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final ProfileContentRepository contentRepository;
     private final SocialLinkRepository socialLinkRepository;
+    private final AuditService auditService;
     private final Clock clock;
 
     public ProfileService(
             ProfileRepository profileRepository,
             ProfileContentRepository contentRepository,
             SocialLinkRepository socialLinkRepository,
+            AuditService auditService,
             Clock clock) {
         this.profileRepository = profileRepository;
         this.contentRepository = contentRepository;
         this.socialLinkRepository = socialLinkRepository;
+        this.auditService = auditService;
         this.clock = clock;
     }
 
@@ -49,6 +53,7 @@ public class ProfileService {
     public ProfileAdminResponse save(ProfileSaveRequest request) {
         Profile profile = profileRepository.findFirstByDeletedAtIsNullOrderByIdAsc()
                 .orElseGet(Profile::new);
+        ProfileAdminResponse oldValue = profile.getId() == null ? null : toAdminResponse(profile);
         profile.setDisplayName(request.displayName().trim());
         profile.setEmail(request.email().trim());
         profile.setLocation(blankToNull(request.location()));
@@ -61,7 +66,9 @@ public class ProfileService {
         saveContents(savedProfile, request.contents() == null ? List.of() : request.contents());
         saveSocialLinks(savedProfile, request.socialLinks() == null ? List.of() : request.socialLinks());
 
-        return toAdminResponse(savedProfile);
+        ProfileAdminResponse response = toAdminResponse(savedProfile);
+        auditService.success("PROFILE_UPDATE", "PROFILE", response.id(), response.displayName(), oldValue, response);
+        return response;
     }
 
     @Transactional(readOnly = true)

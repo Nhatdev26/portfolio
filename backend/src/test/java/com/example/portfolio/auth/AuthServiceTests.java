@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.example.portfolio.auth.dto.AuthResponse;
 import com.example.portfolio.auth.dto.LoginRequest;
 import com.example.portfolio.auth.dto.LogoutResponse;
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.user.User;
 import com.example.portfolio.user.UserRepository;
@@ -46,6 +47,9 @@ class AuthServiceTests {
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
 
+    @Mock
+    private AuditService auditService;
+
     private TokenService tokenService;
     private AuthService authService;
 
@@ -57,6 +61,7 @@ class AuthServiceTests {
                 refreshTokenRepository,
                 passwordEncoder,
                 tokenService,
+                auditService,
                 CLOCK);
     }
 

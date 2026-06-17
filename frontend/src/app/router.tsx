@@ -4,6 +4,7 @@ import { RequireAuth } from "../features/auth/AuthProvider";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
+import { AuditLogsPage } from "../pages/admin/AuditLogsPage";
 import { CvFilesPage } from "../pages/admin/CvFilesPage";
 import { LoginPage } from "../pages/admin/LoginPage";
 import { NoteFormPage } from "../pages/admin/NoteFormPage";
@@ -64,7 +65,7 @@ export const router = createBrowserRouter([
           { path: "skill-groups", element: <TaxonomyPage section="skill-groups" /> },
           { path: "cv-files", element: <CvFilesPage /> },
           { path: "media", element: <PlaceholderPage title="Media library" /> },
-          { path: "audit-logs", element: <PlaceholderPage title="Audit logs" /> }
+          { path: "audit-logs", element: <AuditLogsPage /> }
         ]
       }
     ]

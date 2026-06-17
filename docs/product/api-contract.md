@@ -112,6 +112,13 @@ Media and audit:
 - `DELETE /api/admin/media-assets/{id}`
 - `GET /api/admin/audit-logs`
 
+Audit log filters:
+
+- `GET /api/admin/audit-logs?action=LOGIN_SUCCESS`
+- `GET /api/admin/audit-logs?entityType=PROJECT`
+- `GET /api/admin/audit-logs?actor=admin@example.com`
+- `GET /api/admin/audit-logs?from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z`
+
 Auth:
 
 - `POST /auth/login`
@@ -185,3 +192,13 @@ The content CMS story exposes project and technical-note admin APIs under
 Project slugs and note slugs are unique per language among non-deleted records.
 Publishing a project requires SEO fields and at least one ACTIVE technology.
 Publishing a technical note requires SEO fields and an ACTIVE category.
+
+## Current Phase 6 Audit Logs
+
+The audit story exposes read-only admin audit history through
+`GET /api/admin/audit-logs`. The endpoint requires admin authentication and
+supports filters by action, entity type, actor email, and date range.
+
+Audit logs are not exposed through public APIs. Audit payloads store safe JSONB
+summaries only; passwords, tokens, secrets, and authorization values are
+redacted before persistence.

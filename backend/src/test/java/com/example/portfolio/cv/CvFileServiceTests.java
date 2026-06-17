@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.content.ContentLanguage;
 import java.time.Clock;
@@ -29,11 +30,14 @@ class CvFileServiceTests {
     @Mock
     private CvFileRepository cvFileRepository;
 
+    @Mock
+    private AuditService auditService;
+
     private CvFileService cvFileService;
 
     @BeforeEach
     void setUp() {
-        cvFileService = new CvFileService(cvFileRepository, CLOCK);
+        cvFileService = new CvFileService(cvFileRepository, auditService, CLOCK);
     }
 
     @Test

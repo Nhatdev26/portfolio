@@ -1,5 +1,6 @@
 package com.example.portfolio.taxonomy;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.taxonomy.dto.CategoryRequest;
 import com.example.portfolio.taxonomy.dto.CategoryResponse;
@@ -14,6 +15,7 @@ import java.time.Clock;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class TaxonomyService {
     private final TagRepository tagRepository;
     private final TechnologyRepository technologyRepository;
     private final SkillGroupRepository skillGroupRepository;
+    private final AuditService auditService;
     private final Clock clock;
 
     public TaxonomyService(
@@ -33,11 +36,13 @@ public class TaxonomyService {
             TagRepository tagRepository,
             TechnologyRepository technologyRepository,
             SkillGroupRepository skillGroupRepository,
+            AuditService auditService,
             Clock clock) {
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.technologyRepository = technologyRepository;
         this.skillGroupRepository = skillGroupRepository;
+        this.auditService = auditService;
         this.clock = clock;
     }
 
@@ -113,13 +118,17 @@ public class TaxonomyService {
                 ? new Category()
                 : categoryRepository.findByIdAndDeletedAtIsNull(request.id())
                         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Category was not found."));
+        CategoryResponse oldValue = category.id == null ? null : toCategoryResponse(category);
         ensureCategorySlugAvailable(request.slug(), category.id);
         category.name = request.name().trim();
         category.slug = normalizeSlug(request.slug());
         category.description = blankToNull(request.description());
         category.status = request.status();
         category.displayOrder = request.displayOrder();
-        return toCategoryResponse(categoryRepository.save(category));
+        CategoryResponse response = toCategoryResponse(categoryRepository.save(category));
+        auditService.success(oldValue == null ? "CATEGORY_CREATE" : "CATEGORY_UPDATE",
+                "CATEGORY", response.id(), response.name(), oldValue, response);
+        return response;
     }
 
     @Transactional
@@ -128,12 +137,16 @@ public class TaxonomyService {
                 ? new Tag()
                 : tagRepository.findByIdAndDeletedAtIsNull(request.id())
                         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Tag was not found."));
+        TagResponse oldValue = tag.id == null ? null : toTagResponse(tag);
         ensureTagSlugAvailable(request.slug(), tag.id);
         tag.name = request.name().trim();
         tag.slug = normalizeSlug(request.slug());
         tag.status = request.status();
         tag.displayOrder = request.displayOrder();
-        return toTagResponse(tagRepository.save(tag));
+        TagResponse response = toTagResponse(tagRepository.save(tag));
+        auditService.success(oldValue == null ? "TAG_CREATE" : "TAG_UPDATE",
+                "TAG", response.id(), response.name(), oldValue, response);
+        return response;
     }
 
     @Transactional
@@ -142,6 +155,7 @@ public class TaxonomyService {
                 ? new Technology()
                 : technologyRepository.findByIdAndDeletedAtIsNull(request.id())
                         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Technology was not found."));
+        TechnologyResponse oldValue = technology.id == null ? null : toTechnologyResponse(technology);
         ensureTechnologySlugAvailable(request.slug(), technology.id);
         technology.name = request.name().trim();
         technology.slug = normalizeSlug(request.slug());
@@ -151,7 +165,10 @@ public class TaxonomyService {
         technology.howIUseIt = blankToNull(request.howIUseIt());
         technology.core = request.core();
         technology.displayOrder = request.displayOrder();
-        return toTechnologyResponse(technologyRepository.save(technology));
+        TechnologyResponse response = toTechnologyResponse(technologyRepository.save(technology));
+        auditService.success(oldValue == null ? "TECHNOLOGY_CREATE" : "TECHNOLOGY_UPDATE",
+                "TECHNOLOGY", response.id(), response.name(), oldValue, response);
+        return response;
     }
 
     @Transactional
@@ -160,6 +177,7 @@ public class TaxonomyService {
                 ? new SkillGroup()
                 : skillGroupRepository.findByIdAndDeletedAtIsNull(request.id())
                         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Skill group was not found."));
+        SkillGroupResponse oldValue = group.id == null ? null : toSkillGroupResponse(group);
         ensureSkillGroupSlugAvailable(request.slug(), group.id);
         group.name = request.name().trim();
         group.slug = normalizeSlug(request.slug());
@@ -172,63 +190,82 @@ public class TaxonomyService {
         if (group.technologies.size() != new LinkedHashSet<>(ids).size()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Skill group can attach only active technologies.");
         }
-        return toSkillGroupResponse(skillGroupRepository.save(group));
+        SkillGroupResponse response = toSkillGroupResponse(skillGroupRepository.save(group));
+        auditService.success(oldValue == null ? "SKILL_GROUP_CREATE" : "SKILL_GROUP_UPDATE",
+                "SKILL_GROUP", response.id(), response.name(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public void archiveCategory(Long id) {
         Category category = categoryRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Category was not found."));
+        CategoryResponse oldValue = toCategoryResponse(category);
         category.status = TaxonomyStatus.ARCHIVED;
+        auditService.success("CATEGORY_ARCHIVE", "CATEGORY", category.id, category.name, oldValue, toCategoryResponse(category));
     }
 
     @Transactional
     public void archiveTag(Long id) {
         Tag tag = tagRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Tag was not found."));
+        TagResponse oldValue = toTagResponse(tag);
         tag.status = TaxonomyStatus.ARCHIVED;
+        auditService.success("TAG_ARCHIVE", "TAG", tag.id, tag.name, oldValue, toTagResponse(tag));
     }
 
     @Transactional
     public void archiveTechnology(Long id) {
         Technology technology = technologyRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Technology was not found."));
+        TechnologyResponse oldValue = toTechnologyResponse(technology);
         technology.status = TaxonomyStatus.ARCHIVED;
+        auditService.success("TECHNOLOGY_ARCHIVE", "TECHNOLOGY", technology.id, technology.name, oldValue, toTechnologyResponse(technology));
     }
 
     @Transactional
     public void archiveSkillGroup(Long id) {
         SkillGroup group = skillGroupRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Skill group was not found."));
+        SkillGroupResponse oldValue = toSkillGroupResponse(group);
         group.status = TaxonomyStatus.ARCHIVED;
+        auditService.success("SKILL_GROUP_ARCHIVE", "SKILL_GROUP", group.id, group.name, oldValue, toSkillGroupResponse(group));
     }
 
     @Transactional
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Category was not found."));
+        CategoryResponse oldValue = toCategoryResponse(category);
         category.deletedAt = clock.instant();
+        auditService.success("CATEGORY_DELETE", "CATEGORY", category.id, category.name, oldValue, Map.of("deletedAt", category.deletedAt));
     }
 
     @Transactional
     public void deleteTag(Long id) {
         Tag tag = tagRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Tag was not found."));
+        TagResponse oldValue = toTagResponse(tag);
         tag.deletedAt = clock.instant();
+        auditService.success("TAG_DELETE", "TAG", tag.id, tag.name, oldValue, Map.of("deletedAt", tag.deletedAt));
     }
 
     @Transactional
     public void deleteTechnology(Long id) {
         Technology technology = technologyRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Technology was not found."));
+        TechnologyResponse oldValue = toTechnologyResponse(technology);
         technology.deletedAt = clock.instant();
+        auditService.success("TECHNOLOGY_DELETE", "TECHNOLOGY", technology.id, technology.name, oldValue, Map.of("deletedAt", technology.deletedAt));
     }
 
     @Transactional
     public void deleteSkillGroup(Long id) {
         SkillGroup group = skillGroupRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Skill group was not found."));
+        SkillGroupResponse oldValue = toSkillGroupResponse(group);
         group.deletedAt = clock.instant();
+        auditService.success("SKILL_GROUP_DELETE", "SKILL_GROUP", group.id, group.name, oldValue, Map.of("deletedAt", group.deletedAt));
     }
 
     private void ensureCategorySlugAvailable(String slug, Long currentId) {

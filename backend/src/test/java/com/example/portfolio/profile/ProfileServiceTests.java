@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.profile.dto.ProfileContentRequest;
 import com.example.portfolio.profile.dto.ProfileSaveRequest;
@@ -40,6 +41,9 @@ class ProfileServiceTests {
     @Mock
     private SocialLinkRepository socialLinkRepository;
 
+    @Mock
+    private AuditService auditService;
+
     private ProfileService profileService;
 
     @BeforeEach
@@ -48,6 +52,7 @@ class ProfileServiceTests {
                 profileRepository,
                 contentRepository,
                 socialLinkRepository,
+                auditService,
                 CLOCK);
     }
 

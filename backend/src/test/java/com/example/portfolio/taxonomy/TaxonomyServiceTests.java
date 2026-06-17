@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.taxonomy.dto.CategoryRequest;
 import com.example.portfolio.taxonomy.dto.SkillGroupRequest;
@@ -38,6 +39,9 @@ class TaxonomyServiceTests {
     @Mock
     private SkillGroupRepository skillGroupRepository;
 
+    @Mock
+    private AuditService auditService;
+
     private TaxonomyService taxonomyService;
 
     @BeforeEach
@@ -47,6 +51,7 @@ class TaxonomyServiceTests {
                 tagRepository,
                 technologyRepository,
                 skillGroupRepository,
+                auditService,
                 CLOCK);
     }
 
