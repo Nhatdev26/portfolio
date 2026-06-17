@@ -44,7 +44,7 @@
 - `GET /public/skill-groups`
 - `GET /public/categories/{slug}/notes`
 - `GET /public/tags/{slug}/notes`
-- `GET /public/cv/download`
+- `GET /public/cv/download?language=EN|VI&targetRole=backend-developer`
 
 ## Admin Backend APIs
 
@@ -57,6 +57,14 @@ Profile:
 
 - `GET /api/admin/profile`
 - `PUT /api/admin/profile`
+
+CV files:
+
+- `GET /api/admin/cv-files`
+- `POST /api/admin/cv-files`
+- `PATCH /api/admin/cv-files/{id}/activate`
+- `PATCH /api/admin/cv-files/{id}/archive`
+- `DELETE /api/admin/cv-files/{id}`
 
 Projects:
 
@@ -150,6 +158,16 @@ The profile CMS story exposes:
 The public profile API returns only ACTIVE profile data, ACTIVE localized
 content for the requested language, and ACTIVE social links. Missing active
 profile/content returns HTTP 404.
+
+## Current Phase 3 CV Files CMS
+
+The CV files story exposes admin upload and activation APIs under
+`/api/admin/cv-files` plus public download through
+`/public/cv/download?language=EN|VI&targetRole=backend-developer`.
+
+Admin CV upload accepts only PDF files up to 5 MB. Upload creates a DRAFT CV.
+Activating a CV archives any other ACTIVE CV for the same language and target
+role. Public CV download returns only ACTIVE, non-deleted CVs.
 
 ## Current Phase 4 Taxonomy CMS
 

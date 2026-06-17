@@ -8,6 +8,7 @@ Use `docs/templates/decision.md` when adding a new decision.
 Current content decisions:
 
 - [0012 E04/E05 Content CMS Scope](0012-e04-e05-content-scope.md)
+- [0013 CV File Storage Boundary](0013-cv-file-storage-boundary.md)
 
 After adding or updating a markdown decision file, also add or refresh the
 durable decision row:
