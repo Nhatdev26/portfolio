@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export class ApiClientError extends Error {
   constructor(
@@ -57,4 +57,3 @@ export const adminApi = {
   get: <T>(path: string, token: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: "GET", token })
 };
-

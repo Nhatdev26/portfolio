@@ -26,6 +26,12 @@
 - Password Reset Token after MVP
 - Status History after MVP
 
+User records are CMS/admin accounts only. Public visitors are never stored in
+`users`.
+
+Refresh tokens store token hashes only. Raw refresh tokens must not be
+persisted.
+
 ## Relationship Tables
 
 - project_technologies
@@ -69,4 +75,3 @@ Public APIs must not return:
 - Audit old and new values use JSONB.
 - One active CV exists per language and target role.
 - One active profile content exists per profile and language.
-
