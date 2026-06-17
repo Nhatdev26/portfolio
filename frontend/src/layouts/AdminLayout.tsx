@@ -8,6 +8,9 @@ const adminLinks = [
   { to: "/admin/projects", label: "Projects" },
   { to: "/admin/notes", label: "Notes" },
   { to: "/admin/technologies", label: "Technologies" },
+  { to: "/admin/categories", label: "Categories" },
+  { to: "/admin/tags", label: "Tags" },
+  { to: "/admin/skill-groups", label: "Skill groups" },
   { to: "/admin/media", label: "Media" },
   { to: "/admin/audit-logs", label: "Audit" }
 ];

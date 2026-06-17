@@ -61,5 +61,9 @@ export const adminApi = {
   put: <T>(path: string, token: string, body?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, body, method: "PUT", token }),
   post: <T>(path: string, token: string, body?: unknown, options?: RequestOptions) =>
-    request<T>(path, { ...options, body, method: "POST", token })
+    request<T>(path, { ...options, body, method: "POST", token }),
+  patch: <T>(path: string, token: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(path, { ...options, body, method: "PATCH", token }),
+  delete: <T>(path: string, token: string, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: "DELETE", token })
 };

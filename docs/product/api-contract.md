@@ -34,10 +34,14 @@
 
 - `GET /public/profile?language=EN|VI`
 - `GET /public/projects`
-- `GET /public/projects/{slug}`
+- `GET /public/projects/{slug}?language=EN|VI`
 - `GET /public/notes`
-- `GET /public/notes/{slug}`
+- `GET /public/notes/{slug}?language=EN|VI`
+- `GET /public/categories`
+- `GET /public/tags`
+- `GET /public/technologies`
 - `GET /public/technologies/{slug}`
+- `GET /public/skill-groups`
 - `GET /public/categories/{slug}/notes`
 - `GET /public/tags/{slug}/notes`
 - `GET /public/cv/download`
@@ -60,7 +64,7 @@ Projects:
 - `GET /api/admin/projects`
 - `GET /api/admin/projects/{id}`
 - `PUT /api/admin/projects/{id}`
-- `PATCH /api/admin/projects/{id}/status`
+- `PATCH /api/admin/projects/{id}/archive`
 - `DELETE /api/admin/projects/{id}`
 
 Technical notes:
@@ -69,8 +73,28 @@ Technical notes:
 - `GET /api/admin/notes`
 - `GET /api/admin/notes/{id}`
 - `PUT /api/admin/notes/{id}`
-- `PATCH /api/admin/notes/{id}/status`
+- `PATCH /api/admin/notes/{id}/archive`
 - `DELETE /api/admin/notes/{id}`
+
+Taxonomy:
+
+- `GET /api/admin/taxonomy`
+- `POST /api/admin/categories`
+- `PUT /api/admin/categories/{id}`
+- `PATCH /api/admin/categories/{id}/archive`
+- `DELETE /api/admin/categories/{id}`
+- `POST /api/admin/tags`
+- `PUT /api/admin/tags/{id}`
+- `PATCH /api/admin/tags/{id}/archive`
+- `DELETE /api/admin/tags/{id}`
+- `POST /api/admin/technologies`
+- `PUT /api/admin/technologies/{id}`
+- `PATCH /api/admin/technologies/{id}/archive`
+- `DELETE /api/admin/technologies/{id}`
+- `POST /api/admin/skill-groups`
+- `PUT /api/admin/skill-groups/{id}`
+- `PATCH /api/admin/skill-groups/{id}/archive`
+- `DELETE /api/admin/skill-groups/{id}`
 
 Media and audit:
 
@@ -126,3 +150,20 @@ The profile CMS story exposes:
 The public profile API returns only ACTIVE profile data, ACTIVE localized
 content for the requested language, and ACTIVE social links. Missing active
 profile/content returns HTTP 404.
+
+## Current Phase 4 Taxonomy CMS
+
+The taxonomy story exposes admin save/archive/delete APIs under
+`/api/admin/**` and active-only public APIs under `/public/**`.
+
+Slug uniqueness is enforced among non-deleted records. Skill groups can attach
+only ACTIVE technologies. Public taxonomy APIs return only ACTIVE records.
+
+## Current Phase 5 Projects And Notes CMS
+
+The content CMS story exposes project and technical-note admin APIs under
+`/api/admin/**` and published-only public APIs under `/public/**`.
+
+Project slugs and note slugs are unique per language among non-deleted records.
+Publishing a project requires SEO fields and at least one ACTIVE technology.
+Publishing a technical note requires SEO fields and an ACTIVE category.
