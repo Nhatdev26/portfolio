@@ -4,6 +4,7 @@ import { RequireAuth } from "../features/auth/AuthProvider";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
+import { CvFilesPage } from "../pages/admin/CvFilesPage";
 import { LoginPage } from "../pages/admin/LoginPage";
 import { NoteFormPage } from "../pages/admin/NoteFormPage";
 import { NoteListPage } from "../pages/admin/NoteListPage";
@@ -14,6 +15,7 @@ import { TaxonomyPage } from "../pages/admin/TaxonomyPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { AboutPage } from "../pages/public/AboutPage";
+import { CvPage } from "../pages/public/CvPage";
 import { HomePage } from "../pages/public/HomePage";
 import { NoteDetailPage } from "../pages/public/NoteDetailPage";
 import { NotesPage } from "../pages/public/NotesPage";
@@ -34,7 +36,7 @@ export const router = createBrowserRouter([
       { path: "notes", element: <NotesPage /> },
       { path: "notes/:slug", element: <NoteDetailPage /> },
       { path: "technologies/:slug", element: <TechnologyDetailPage /> },
-      { path: "cv", element: <PlaceholderPage title="CV" /> }
+      { path: "cv", element: <CvPage /> }
     ]
   },
   {
@@ -60,7 +62,7 @@ export const router = createBrowserRouter([
           { path: "categories", element: <TaxonomyPage section="categories" /> },
           { path: "tags", element: <TaxonomyPage section="tags" /> },
           { path: "skill-groups", element: <TaxonomyPage section="skill-groups" /> },
-          { path: "cv-files", element: <PlaceholderPage title="CV files CMS" /> },
+          { path: "cv-files", element: <CvFilesPage /> },
           { path: "media", element: <PlaceholderPage title="Media library" /> },
           { path: "audit-logs", element: <PlaceholderPage title="Audit logs" /> }
         ]

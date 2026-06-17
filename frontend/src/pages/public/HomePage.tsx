@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getBackendHealth } from "../../services/health";
 import { getPublicProfile } from "../../services/profile";
+import { publicCvDownloadUrl } from "../../services/cv";
 
 export function HomePage() {
   const health = useQuery({
@@ -33,8 +34,13 @@ export function HomePage() {
                 {link.label}
               </a>
             ))}
+            <a href={publicCvDownloadUrl("EN", "backend-developer")}>Download CV</a>
           </div>
-        ) : null}
+        ) : (
+          <div className="hero-links">
+            <a href={publicCvDownloadUrl("EN", "backend-developer")}>Download CV</a>
+          </div>
+        )}
       </div>
 
       <div className="status-panel" aria-live="polite">

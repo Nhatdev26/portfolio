@@ -58,6 +58,11 @@ Technical notes own localized markdown-like content, category, reading minutes,
 SEO fields, and relationships to technologies and tags. A note must have an
 active category and SEO title/description before it can be published.
 
+CV files own PDF bytes, language, target role, version, file metadata, upload
+time, activation time, and status. Uploads are DRAFT by default. Activation
+marks the selected CV ACTIVE and archives any other ACTIVE CV for the same
+language and target role.
+
 ## Relationship Tables
 
 - project_technologies
@@ -108,3 +113,4 @@ Public APIs must not return:
 - Technical note slugs are unique per language among non-deleted notes.
 - Category, tag, technology, and skill-group slugs are unique among non-deleted
   records.
+- CV uploads accept only PDF files up to 5 MB.

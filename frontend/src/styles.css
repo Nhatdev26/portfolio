@@ -253,6 +253,11 @@ h1 {
   text-transform: uppercase;
 }
 
+.status-chip.quiet {
+  background: #eef2f7;
+  color: #526075;
+}
+
 .metric-grid {
   display: grid;
   gap: 16px;
@@ -368,6 +373,10 @@ h1 {
   display: block;
   font-size: 0.9rem;
   margin-top: 4px;
+}
+
+.data-table tr.active-row td {
+  background: #f0fdfa;
 }
 
 .table-actions {
