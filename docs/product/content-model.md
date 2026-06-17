@@ -35,6 +35,10 @@ persisted.
 Refresh-token rotation revokes the old token and persists a new token hash.
 Logout revokes the presented refresh token.
 
+Profile records own identity fields and publication status. Profile Content
+records own localized copy for EN and VI. Social Link records own platform,
+label, URL, display order, and active/inactive state.
+
 ## Relationship Tables
 
 - project_technologies
@@ -77,4 +81,7 @@ Public APIs must not return:
 - Many-to-many relationships use explicit join tables.
 - Audit old and new values use JSONB.
 - One active CV exists per language and target role.
+- One active profile exists at a time.
 - One active profile content exists per profile and language.
+- Social links require `mailto:` for EMAIL and `http` or `https` for other
+  platforms.
