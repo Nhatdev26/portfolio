@@ -11,12 +11,14 @@ export function CvPage() {
   const downloadUrl = publicCvDownloadUrl("EN", "backend-developer");
 
   return (
-    <section className="public-detail">
-      <p className="eyebrow">CV</p>
-      <h1>Download CV</h1>
-      <p className="lead-text">
-        Get the latest active CV for backend engineering opportunities.
-      </p>
+    <section className="public-detail cv-showcase">
+      <div>
+        <p className="eyebrow">CV</p>
+        <h1>Download CV</h1>
+        <p className="lead-text">
+          Get the latest active CV for backend engineering opportunities.
+        </p>
+      </div>
       {cvQuery.isLoading && <p className="muted">Checking active CV...</p>}
       {cvQuery.data ? (
         <div className="hero-links compact-links">

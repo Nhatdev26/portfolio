@@ -10,13 +10,15 @@ export function AboutPage() {
   });
 
   return (
-    <section className="content-panel profile-public">
-      <p className="eyebrow">About</p>
-      <h1>{profile.data?.displayName ?? "About"}</h1>
-      <p className="hero-text">
-        {profile.data?.longBio ??
-          "This route is reserved for the public profile vertical slice."}
-      </p>
+    <section className="profile-public about-showcase">
+      <div className="about-copy">
+        <p className="eyebrow">About</p>
+        <h1>{profile.data?.displayName ?? "About"}</h1>
+        <p className="hero-text">
+          {profile.data?.longBio ??
+            "This route is reserved for the public profile vertical slice."}
+        </p>
+      </div>
       {profile.data && (
         <dl className="profile-facts">
           <div>
