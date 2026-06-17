@@ -1,0 +1,7 @@
+frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+backend/target/
+harness.db
+harness.db-wal
+harness.db-shm
