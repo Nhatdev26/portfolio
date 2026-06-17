@@ -6,8 +6,8 @@ No domain model changes.
 
 ## Application Flow
 
-No API flow changes. Existing public profile, project, note, technology, CV,
-and health queries are reused.
+No API flow changes. Existing public profile, project, note, technology, and
+health queries are reused.
 
 ## Interface Contract
 
@@ -17,10 +17,10 @@ Frontend routes remain unchanged:
 - `/about`
 - `/projects`
 - `/projects/:slug`
+- `/skills`
 - `/notes`
 - `/notes/:slug`
 - `/technologies/:slug`
-- `/cv`
 
 ## Data Model
 
@@ -34,7 +34,7 @@ Reference patterns to adapt:
 - Cyan/blue gradient brand mark and headline treatment.
 - Rounded pill CTAs and hover underlines.
 - Elevated dark cards with subtle border glow.
-- Richer home page sections for focus areas, selected work, notes, and contact.
+- Richer home page sections for focus areas, selected work, skills, blog, and contact.
 - Mobile bottom navigation.
 - Reduced-motion fallback for animations.
 

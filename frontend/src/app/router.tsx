@@ -16,12 +16,12 @@ import { ProjectListPage } from "../pages/admin/ProjectListPage";
 import { TaxonomyPage } from "../pages/admin/TaxonomyPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { AboutPage } from "../pages/public/AboutPage";
-import { CvPage } from "../pages/public/CvPage";
 import { HomePage } from "../pages/public/HomePage";
 import { NoteDetailPage } from "../pages/public/NoteDetailPage";
 import { NotesPage } from "../pages/public/NotesPage";
 import { ProjectDetailPage } from "../pages/public/ProjectDetailPage";
 import { ProjectsPage } from "../pages/public/ProjectsPage";
+import { SkillsPage } from "../pages/public/SkillsPage";
 import { TechnologyDetailPage } from "../pages/public/TechnologyDetailPage";
 
 export const router = createBrowserRouter([
@@ -34,10 +34,10 @@ export const router = createBrowserRouter([
       { path: "about", element: <AboutPage /> },
       { path: "projects", element: <ProjectsPage /> },
       { path: "projects/:slug", element: <ProjectDetailPage /> },
+      { path: "skills", element: <SkillsPage /> },
       { path: "notes", element: <NotesPage /> },
       { path: "notes/:slug", element: <NoteDetailPage /> },
-      { path: "technologies/:slug", element: <TechnologyDetailPage /> },
-      { path: "cv", element: <CvPage /> }
+      { path: "technologies/:slug", element: <TechnologyDetailPage /> }
     ]
   },
   {

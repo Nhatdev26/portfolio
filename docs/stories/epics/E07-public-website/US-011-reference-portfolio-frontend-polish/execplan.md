@@ -3,13 +3,13 @@
 ## Goal
 
 Make the frontend feel closer to the referenced developer portfolio while
-preserving current routes, data contracts, and CMS behavior.
+preserving data contracts and CMS behavior.
 
 ## Scope
 
 In scope:
 
-- Public layout, home, about, list, detail, technology, and CV page polish.
+- Public layout, home, about, project, skill, blog, and technology page polish.
 - CSS design tokens, animation, hover/focus states, and responsive treatment.
 - Browser smoke on public and admin routes.
 - Story and matrix proof updates.
