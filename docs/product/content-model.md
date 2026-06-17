@@ -39,6 +39,25 @@ Profile records own identity fields and publication status. Profile Content
 records own localized copy for EN and VI. Social Link records own platform,
 label, URL, display order, and active/inactive state.
 
+Categories and tags use ACTIVE/ARCHIVED status, slug uniqueness among
+non-deleted records, display order, and soft delete.
+
+Technologies use ACTIVE/ARCHIVED status, type, description, usage notes,
+core/non-core flag, display order, slug uniqueness among non-deleted records,
+and soft delete.
+
+Skill groups use ACTIVE/ARCHIVED status and attach active technologies through
+`skill_group_technologies`.
+
+Projects own localized portfolio case-study content, project lifecycle status,
+content publish status, SEO fields, source/demo links, and relationships to
+technologies, tags, and related notes. A project must have at least one active
+technology and SEO title/description before it can be published.
+
+Technical notes own localized markdown-like content, category, reading minutes,
+SEO fields, and relationships to technologies and tags. A note must have an
+active category and SEO title/description before it can be published.
+
 ## Relationship Tables
 
 - project_technologies
@@ -85,3 +104,7 @@ Public APIs must not return:
 - One active profile content exists per profile and language.
 - Social links require `mailto:` for EMAIL and `http` or `https` for other
   platforms.
+- Project slugs are unique per language among non-deleted projects.
+- Technical note slugs are unique per language among non-deleted notes.
+- Category, tag, technology, and skill-group slugs are unique among non-deleted
+  records.
