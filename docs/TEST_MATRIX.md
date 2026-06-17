@@ -22,6 +22,7 @@ validation evidence exist.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | US-001 | Full-stack project foundation scaffold | yes | yes | yes | yes | implemented | Frontend install/typecheck/build passed; backend `mvn test` passed; Docker Compose build/up passed; backend health, frontend HTTP, browser smoke, and Flyway baseline migration passed. |
 | US-002 | Auth foundation for CMS admin accounts | yes | yes | yes | yes | implemented | Backend `mvn test` passed with admin seeder coverage; Flyway v2 created `users` and `refresh_tokens`; Docker Compose build/up passed; backend health and frontend Nginx `/api/health` proxy returned 200; browser smoke displayed backend `OK` with no console warn/error logs. |
+| US-003 | Admin login and JWT session | yes | yes | yes | yes | implemented | Backend `mvn test` passed with JWT/auth service coverage; frontend typecheck/build passed; Docker Compose build/up passed with admin seed; `/auth/login`, `/auth/me`, `/auth/refresh`, and `/auth/logout` passed through the frontend proxy; browser smoke completed login and sign out with no console warn/error logs. |
 
 ## Evidence Rules
 

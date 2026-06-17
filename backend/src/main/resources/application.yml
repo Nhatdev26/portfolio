@@ -28,3 +28,9 @@ app:
       enabled: ${ADMIN_SEED_ENABLED:false}
       email: ${ADMIN_SEED_EMAIL:}
       password: ${ADMIN_SEED_PASSWORD:}
+  auth:
+    refresh-token-days: ${AUTH_REFRESH_TOKEN_DAYS:14}
+    jwt:
+      issuer: ${AUTH_JWT_ISSUER:portfolio-cms}
+      secret: ${AUTH_JWT_SECRET:dev-only-change-me-please-use-a-real-32-byte-secret}
+      access-token-minutes: ${AUTH_ACCESS_TOKEN_MINUTES:15}

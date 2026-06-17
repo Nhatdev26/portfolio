@@ -161,6 +161,29 @@ h1 {
   color: #172033;
 }
 
+.admin-account {
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+  color: #c7d2e2;
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.admin-account span {
+  overflow-wrap: anywhere;
+}
+
+.admin-account button {
+  background: #f2b84b;
+  border: 0;
+  border-radius: 6px;
+  color: #172033;
+  cursor: pointer;
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
 .admin-main {
   padding: clamp(20px, 5vw, 56px);
 }
@@ -237,6 +260,20 @@ h1 {
   padding: 10px 14px;
 }
 
+.auth-form button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.form-error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 6px;
+  color: #be123c;
+  margin: 0;
+  padding: 10px 12px;
+}
+
 @media (max-width: 760px) {
   .site-header,
   .hero-section,
@@ -265,4 +302,3 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
-

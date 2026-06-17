@@ -24,6 +24,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, message, request);
     }
 
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiError> handleApiException(ApiException exception, WebRequest request) {
+        return build(exception.getStatus(), exception.getMessage(), request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception exception, WebRequest request) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error", request);
@@ -41,4 +46,3 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(body);
     }
 }
-

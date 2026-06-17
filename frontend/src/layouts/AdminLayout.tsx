@@ -1,5 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 
+import { useAuth } from "../features/auth/AuthProvider";
+
 const adminLinks = [
   { to: "/admin", label: "Dashboard" },
   { to: "/admin/profile", label: "Profile" },
@@ -11,6 +13,8 @@ const adminLinks = [
 ];
 
 export function AdminLayout() {
+  const { logout, session } = useAuth();
+
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
@@ -24,6 +28,12 @@ export function AdminLayout() {
             </NavLink>
           ))}
         </nav>
+        <div className="admin-account">
+          <span>{session?.user.email}</span>
+          <button type="button" onClick={() => void logout()}>
+            Sign out
+          </button>
+        </div>
       </aside>
       <main className="admin-main">
         <Outlet />
@@ -31,4 +41,3 @@ export function AdminLayout() {
     </div>
   );
 }
-
