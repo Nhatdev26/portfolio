@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.content.dto.NoteRequest;
 import com.example.portfolio.content.dto.ProjectRequest;
@@ -53,6 +54,9 @@ class ContentServiceTests {
     @Mock
     private TechnologyRepository technologyRepository;
 
+    @Mock
+    private AuditService auditService;
+
     private ContentService contentService;
 
     @BeforeEach
@@ -63,6 +67,7 @@ class ContentServiceTests {
                 categoryRepository,
                 tagRepository,
                 technologyRepository,
+                auditService,
                 CLOCK);
     }
 

@@ -1,5 +1,6 @@
 package com.example.portfolio.content;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.content.dto.NoteRequest;
 import com.example.portfolio.content.dto.NoteResponse;
@@ -28,6 +29,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,7 @@ public class ContentService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private final TechnologyRepository technologyRepository;
+    private final AuditService auditService;
     private final Clock clock;
 
     public ContentService(
@@ -50,12 +53,14 @@ public class ContentService {
             CategoryRepository categoryRepository,
             TagRepository tagRepository,
             TechnologyRepository technologyRepository,
+            AuditService auditService,
             Clock clock) {
         this.projectRepository = projectRepository;
         this.noteRepository = noteRepository;
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.technologyRepository = technologyRepository;
+        this.auditService = auditService;
         this.clock = clock;
     }
 
@@ -79,6 +84,8 @@ public class ContentService {
                 ? new Project()
                 : projectRepository.findByIdAndDeletedAtIsNull(id)
                         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Project was not found."));
+        ProjectResponse oldValue = project.id == null ? null : toProjectResponse(project);
+        ContentStatus oldStatus = project.contentStatus;
         ContentLanguage language = defaultLanguage(request.language());
         ContentStatus status = defaultStatus(request.contentStatus());
         String slug = normalizeSlug(request.slug());
@@ -115,23 +122,33 @@ public class ContentService {
                 project.publishedAt = Instant.now(clock);
             }
         }
-        return toProjectResponse(projectRepository.save(project));
+        ProjectResponse response = toProjectResponse(projectRepository.save(project));
+        String action = status == ContentStatus.PUBLISHED && oldStatus != ContentStatus.PUBLISHED
+                ? "PROJECT_PUBLISH"
+                : oldValue == null ? "PROJECT_CREATE" : "PROJECT_UPDATE";
+        auditService.success(action, "PROJECT", response.id(), response.title(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public ProjectResponse archiveProject(Long id) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Project was not found."));
+        ProjectResponse oldValue = toProjectResponse(project);
         project.contentStatus = ContentStatus.ARCHIVED;
-        return toProjectResponse(projectRepository.save(project));
+        ProjectResponse response = toProjectResponse(projectRepository.save(project));
+        auditService.success("PROJECT_ARCHIVE", "PROJECT", response.id(), response.title(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public void deleteProject(Long id) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Project was not found."));
+        ProjectResponse oldValue = toProjectResponse(project);
         project.deletedAt = Instant.now(clock);
         projectRepository.save(project);
+        auditService.success("PROJECT_DELETE", "PROJECT", project.id, project.title, oldValue, Map.of("deletedAt", project.deletedAt));
     }
 
     @Transactional(readOnly = true)
@@ -175,6 +192,8 @@ public class ContentService {
                 ? new TechnicalNote()
                 : noteRepository.findByIdAndDeletedAtIsNull(id)
                         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Technical note was not found."));
+        NoteResponse oldValue = note.id == null ? null : toNoteResponse(note);
+        ContentStatus oldStatus = note.status;
         ContentLanguage language = defaultLanguage(request.language());
         ContentStatus status = defaultStatus(request.status());
         String slug = normalizeSlug(request.slug());
@@ -200,23 +219,33 @@ public class ContentService {
                 note.publishedAt = Instant.now(clock);
             }
         }
-        return toNoteResponse(noteRepository.save(note));
+        NoteResponse response = toNoteResponse(noteRepository.save(note));
+        String action = status == ContentStatus.PUBLISHED && oldStatus != ContentStatus.PUBLISHED
+                ? "NOTE_PUBLISH"
+                : oldValue == null ? "NOTE_CREATE" : "NOTE_UPDATE";
+        auditService.success(action, "TECHNICAL_NOTE", response.id(), response.title(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public NoteResponse archiveNote(Long id) {
         TechnicalNote note = noteRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Technical note was not found."));
+        NoteResponse oldValue = toNoteResponse(note);
         note.status = ContentStatus.ARCHIVED;
-        return toNoteResponse(noteRepository.save(note));
+        NoteResponse response = toNoteResponse(noteRepository.save(note));
+        auditService.success("NOTE_ARCHIVE", "TECHNICAL_NOTE", response.id(), response.title(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public void deleteNote(Long id) {
         TechnicalNote note = noteRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Technical note was not found."));
+        NoteResponse oldValue = toNoteResponse(note);
         note.deletedAt = Instant.now(clock);
         noteRepository.save(note);
+        auditService.success("NOTE_DELETE", "TECHNICAL_NOTE", note.id, note.title, oldValue, Map.of("deletedAt", note.deletedAt));
     }
 
     @Transactional(readOnly = true)

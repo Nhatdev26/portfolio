@@ -35,6 +35,11 @@ persisted.
 Refresh-token rotation revokes the old token and persists a new token hash.
 Logout revokes the presented refresh token.
 
+Audit logs are immutable product records for important CMS actions. They store
+actor id/email, action, entity type/id/title, result, timestamp, and optional
+old/new JSONB values. Passwords, tokens, secrets, and authorization values must
+be redacted before persistence.
+
 Profile records own identity fields and publication status. Profile Content
 records own localized copy for EN and VI. Social Link records own platform,
 label, URL, display order, and active/inactive state.
@@ -114,3 +119,4 @@ Public APIs must not return:
 - Category, tag, technology, and skill-group slugs are unique among non-deleted
   records.
 - CV uploads accept only PDF files up to 5 MB.
+- Audit logs are read-only and never exposed by public APIs.

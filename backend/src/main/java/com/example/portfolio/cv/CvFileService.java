@@ -1,5 +1,6 @@
 package com.example.portfolio.cv;
 
+import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.content.ContentLanguage;
 import com.example.portfolio.cv.dto.CvDownload;
@@ -9,6 +10,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,12 @@ public class CvFileService {
     public static final long MAX_FILE_SIZE_BYTES = 5L * 1024L * 1024L;
 
     private final CvFileRepository cvFileRepository;
+    private final AuditService auditService;
     private final Clock clock;
 
-    public CvFileService(CvFileRepository cvFileRepository, Clock clock) {
+    public CvFileService(CvFileRepository cvFileRepository, AuditService auditService, Clock clock) {
         this.cvFileRepository = cvFileRepository;
+        this.auditService = auditService;
         this.clock = clock;
     }
 
@@ -55,13 +59,16 @@ public class CvFileService {
         } catch (IOException exception) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "CV file could not be read.");
         }
-        return toResponse(cvFileRepository.save(cvFile));
+        CvFileResponse response = toResponse(cvFileRepository.save(cvFile));
+        auditService.success("CV_UPLOAD", "CV_FILE", response.id(), response.originalFilename(), null, response);
+        return response;
     }
 
     @Transactional
     public CvFileResponse activate(Long id) {
         CvFile cvFile = cvFileRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "CV file was not found."));
+        CvFileResponse oldValue = toResponse(cvFile);
         Instant now = Instant.now(clock);
         cvFileRepository.findByLanguageAndTargetRoleAndStatusAndDeletedAtIsNull(
                         cvFile.language,
@@ -76,23 +83,30 @@ public class CvFileService {
                 });
         cvFile.status = CvFileStatus.ACTIVE;
         cvFile.activatedAt = now;
-        return toResponse(cvFileRepository.save(cvFile));
+        CvFileResponse response = toResponse(cvFileRepository.save(cvFile));
+        auditService.success("CV_ACTIVATE", "CV_FILE", response.id(), response.originalFilename(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public CvFileResponse archive(Long id) {
         CvFile cvFile = cvFileRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "CV file was not found."));
+        CvFileResponse oldValue = toResponse(cvFile);
         cvFile.status = CvFileStatus.ARCHIVED;
-        return toResponse(cvFileRepository.save(cvFile));
+        CvFileResponse response = toResponse(cvFileRepository.save(cvFile));
+        auditService.success("CV_ARCHIVE", "CV_FILE", response.id(), response.originalFilename(), oldValue, response);
+        return response;
     }
 
     @Transactional
     public void delete(Long id) {
         CvFile cvFile = cvFileRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "CV file was not found."));
+        CvFileResponse oldValue = toResponse(cvFile);
         cvFile.deletedAt = Instant.now(clock);
         cvFileRepository.save(cvFile);
+        auditService.success("CV_DELETE", "CV_FILE", cvFile.id, cvFile.originalFilename, oldValue, Map.of("deletedAt", cvFile.deletedAt));
     }
 
     @Transactional(readOnly = true)
