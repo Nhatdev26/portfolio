@@ -5,14 +5,19 @@ import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.media.dto.MediaAssetResponse;
 import com.example.portfolio.media.dto.MediaAssetUpdateRequest;
 import com.example.portfolio.media.dto.MediaDownload;
+import com.example.portfolio.media.dto.MediaEntityAssetResponse;
 import com.example.portfolio.media.dto.MediaUsageRequest;
 import com.example.portfolio.media.dto.MediaUsageResponse;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,6 +124,33 @@ public class MediaService {
         MediaUsageResponse response = toUsageResponse(mediaUsageRepository.save(usage));
         auditService.success("MEDIA_USAGE_ATTACH", "MEDIA_ASSET", mediaAsset.id, mediaAsset.title, null, response);
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MediaEntityAssetResponse> listEntityMedia(MediaEntityType entityType, Long entityId, boolean publicOnly) {
+        if (entityId == null || entityId <= 0) {
+            return List.of();
+        }
+        List<MediaUsage> usages = mediaUsageRepository.findByEntityTypeAndEntityIdOrderByCreatedAtDescIdDesc(
+                required(entityType, "Media usage entity type is required."),
+                entityId);
+        if (usages.isEmpty()) {
+            return List.of();
+        }
+        List<Long> mediaAssetIds = usages.stream()
+                .map(usage -> usage.mediaAssetId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+                .stream()
+                .toList();
+        Map<Long, MediaAsset> assets = mediaAssetRepository.findByIdInAndDeletedAtIsNull(mediaAssetIds).stream()
+                .collect(Collectors.toMap(asset -> asset.id, Function.identity()));
+        return usages.stream()
+                .map(usage -> toEntityAssetResponse(usage, assets.get(usage.mediaAssetId)))
+                .filter(Objects::nonNull)
+                .filter(response -> !publicOnly || (response.status() == MediaAssetStatus.READY
+                        && response.visibility() == MediaVisibility.PUBLIC))
+                .toList();
     }
 
     @Transactional
@@ -253,6 +285,24 @@ public class MediaService {
 
     private MediaUsageResponse toUsageResponse(MediaUsage usage) {
         return new MediaUsageResponse(usage.id, usage.entityType, usage.entityId, usage.usageType, usage.createdAt);
+    }
+
+    private MediaEntityAssetResponse toEntityAssetResponse(MediaUsage usage, MediaAsset asset) {
+        if (asset == null) {
+            return null;
+        }
+        return new MediaEntityAssetResponse(
+                usage.id,
+                asset.id,
+                usage.usageType,
+                asset.originalFilename,
+                asset.contentType,
+                asset.title,
+                asset.altText,
+                asset.caption,
+                asset.status,
+                asset.visibility,
+                asset.uploadedAt);
     }
 
     private Map<String, Object> auditPayload(MediaAssetResponse response) {

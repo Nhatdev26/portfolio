@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+import { MediaAttachmentPicker, type MediaAttachmentSlot } from "../../components/admin/MediaAttachmentPicker";
 import { useAuth } from "../../features/auth/AuthProvider";
 import {
   emptyProject,
@@ -15,6 +16,11 @@ import {
   type ProjectPayload,
   type ProjectType
 } from "../../services/content";
+import {
+  mediaSelectionFromEntity,
+  syncMediaUsages,
+  type MediaSelection
+} from "../../services/media";
 import { getAdminTaxonomy } from "../../services/taxonomy";
 
 const languages: ContentLanguage[] = ["EN", "VI"];
@@ -27,6 +33,20 @@ const lifecycleStatuses: ProjectLifecycleStatus[] = [
   "MAINTAINED",
   "ARCHIVED"
 ];
+const projectMediaSlots: MediaAttachmentSlot[] = [
+  {
+    usageType: "COVER_IMAGE",
+    label: "cover",
+    helper: "Primary public project visual."
+  },
+  {
+    usageType: "SCREENSHOT",
+    label: "screenshot",
+    helper: "Optional gallery images.",
+    multiple: true
+  }
+];
+const projectMediaUsageTypes = projectMediaSlots.map((slot) => slot.usageType);
 
 export function ProjectFormPage() {
   const { id } = useParams();
@@ -34,6 +54,7 @@ export function ProjectFormPage() {
   const { session } = useAuth();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<ProjectPayload>(() => emptyProject());
+  const [mediaSelection, setMediaSelection] = useState<MediaSelection>({});
   const [notice, setNotice] = useState<string | null>(null);
 
   const taxonomyQuery = useQuery({
@@ -53,23 +74,45 @@ export function ProjectFormPage() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: (payload: ProjectPayload) => saveProject(requireToken(session?.accessToken), payload),
-    onSuccess: async (project) => {
+    mutationFn: async ({ payload, media }: { payload: ProjectPayload; media: MediaSelection }) => {
+      const token = requireToken(session?.accessToken);
+      const project = await saveProject(token, payload);
+      if (project.id !== null) {
+        await syncMediaUsages(
+          token,
+          "PROJECT",
+          project.id,
+          project.media,
+          media,
+          projectMediaUsageTypes
+        );
+      }
+      return { media, project };
+    },
+    onSuccess: async ({ media, project }) => {
       setNotice("Project saved.");
       setForm(projectToPayload(project));
-      await queryClient.invalidateQueries({ queryKey: ["admin-projects"] });
+      setMediaSelection(media);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["admin-projects"] }),
+        queryClient.invalidateQueries({ queryKey: ["admin-project", String(project.id)] }),
+        queryClient.invalidateQueries({ queryKey: ["media-assets"] })
+      ]);
       if (!id || id === "new") navigate(`/admin/projects/${project.id}/edit`, { replace: true });
     }
   });
 
   useEffect(() => {
-    if (projectQuery.data) setForm(projectToPayload(projectQuery.data));
+    if (projectQuery.data) {
+      setForm(projectToPayload(projectQuery.data));
+      setMediaSelection(mediaSelectionFromEntity(projectQuery.data.media, projectMediaUsageTypes));
+    }
   }, [projectQuery.data]);
 
   function submit(event: FormEvent<HTMLFormElement>, status?: ContentStatus) {
     event.preventDefault();
     setNotice(null);
-    saveMutation.mutate(status ? { ...form, contentStatus: status } : form);
+    saveMutation.mutate({ payload: status ? { ...form, contentStatus: status } : form, media: mediaSelection });
   }
 
   function update<K extends keyof ProjectPayload>(field: K, value: ProjectPayload[K]) {
@@ -143,6 +186,13 @@ export function ProjectFormPage() {
             onChange={(noteIds) => update("noteIds", noteIds)}
           />
         </fieldset>
+
+        <MediaAttachmentPicker
+          token={requireToken(session?.accessToken)}
+          slots={projectMediaSlots}
+          value={mediaSelection}
+          onChange={setMediaSelection}
+        />
 
         <fieldset>
           <legend>Links and SEO</legend>

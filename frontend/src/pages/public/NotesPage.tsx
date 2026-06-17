@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 import { listPublicNotes } from "../../services/content";
+import { publicMediaAssetUrl, type EntityMediaAsset } from "../../services/media";
 
 export function NotesPage() {
   const notesQuery = useQuery({
@@ -24,6 +25,7 @@ export function NotesPage() {
         <div className="public-grid">
           {notesQuery.data.map((note) => (
             <article className="public-card" key={note.id}>
+              <PublicMediaImage asset={preferredMedia(note.media, "CONTENT_IMAGE")} className="public-card-media" />
               <p className="card-meta">{note.category?.name ?? "Uncategorized"} · {note.readingMinutes} min</p>
               <h2><Link to={`/notes/${note.slug}`}>{note.title}</Link></h2>
               <p>{note.excerpt}</p>
@@ -36,4 +38,19 @@ export function NotesPage() {
       )}
     </section>
   );
+}
+
+function preferredMedia(media: EntityMediaAsset[], usageType: EntityMediaAsset["usageType"]) {
+  return media.find((asset) => asset.usageType === usageType && asset.contentType.startsWith("image/")) ?? null;
+}
+
+function PublicMediaImage({
+  asset,
+  className
+}: {
+  asset: EntityMediaAsset | null;
+  className: string;
+}) {
+  if (!asset) return null;
+  return <img className={className} src={publicMediaAssetUrl(asset.mediaAssetId)} alt={asset.altText || asset.title} />;
 }

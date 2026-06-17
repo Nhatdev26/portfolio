@@ -73,6 +73,8 @@ title, alt text, caption, READY/DELETED/FAILED status, PUBLIC/PRIVATE
 visibility, upload time, and soft-delete timestamp. Media usages attach READY
 assets to PROJECT, TECHNICAL_NOTE, TECHNOLOGY, or PROFILE entities with a
 specific usage type. Used media cannot be deleted until usages are detached.
+Project and Technical Note public responses expose attached media summaries only
+when the media asset is READY and PUBLIC.
 
 ## Relationship Tables
 

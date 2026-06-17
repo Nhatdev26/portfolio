@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+import { MediaAttachmentPicker, type MediaAttachmentSlot } from "../../components/admin/MediaAttachmentPicker";
 import { useAuth } from "../../features/auth/AuthProvider";
 import {
   emptyNote,
@@ -12,10 +13,29 @@ import {
   type ContentStatus,
   type NotePayload
 } from "../../services/content";
+import {
+  mediaSelectionFromEntity,
+  syncMediaUsages,
+  type MediaSelection
+} from "../../services/media";
 import { getAdminTaxonomy } from "../../services/taxonomy";
 
 const languages: ContentLanguage[] = ["EN", "VI"];
 const statuses: ContentStatus[] = ["DRAFT", "PUBLISHED", "ARCHIVED"];
+const noteMediaSlots: MediaAttachmentSlot[] = [
+  {
+    usageType: "CONTENT_IMAGE",
+    label: "content image",
+    helper: "Primary visual for the blog post."
+  },
+  {
+    usageType: "DIAGRAM",
+    label: "diagram",
+    helper: "Optional supporting diagrams.",
+    multiple: true
+  }
+];
+const noteMediaUsageTypes = noteMediaSlots.map((slot) => slot.usageType);
 
 export function NoteFormPage() {
   const { id } = useParams();
@@ -23,6 +43,7 @@ export function NoteFormPage() {
   const { session } = useAuth();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<NotePayload>(() => emptyNote());
+  const [mediaSelection, setMediaSelection] = useState<MediaSelection>({});
   const [notice, setNotice] = useState<string | null>(null);
 
   const taxonomyQuery = useQuery({
@@ -36,17 +57,39 @@ export function NoteFormPage() {
     queryFn: () => getAdminNote(requireToken(session?.accessToken), id as string)
   });
   const saveMutation = useMutation({
-    mutationFn: (payload: NotePayload) => saveNote(requireToken(session?.accessToken), payload),
-    onSuccess: async (note) => {
+    mutationFn: async ({ payload, media }: { payload: NotePayload; media: MediaSelection }) => {
+      const token = requireToken(session?.accessToken);
+      const note = await saveNote(token, payload);
+      if (note.id !== null) {
+        await syncMediaUsages(
+          token,
+          "TECHNICAL_NOTE",
+          note.id,
+          note.media,
+          media,
+          noteMediaUsageTypes
+        );
+      }
+      return { media, note };
+    },
+    onSuccess: async ({ media, note }) => {
       setNotice("Note saved.");
       setForm(noteToPayload(note));
-      await queryClient.invalidateQueries({ queryKey: ["admin-notes"] });
+      setMediaSelection(media);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["admin-notes"] }),
+        queryClient.invalidateQueries({ queryKey: ["admin-note", String(note.id)] }),
+        queryClient.invalidateQueries({ queryKey: ["media-assets"] })
+      ]);
       if (!id || id === "new") navigate(`/admin/notes/${note.id}/edit`, { replace: true });
     }
   });
 
   useEffect(() => {
-    if (noteQuery.data) setForm(noteToPayload(noteQuery.data));
+    if (noteQuery.data) {
+      setForm(noteToPayload(noteQuery.data));
+      setMediaSelection(mediaSelectionFromEntity(noteQuery.data.media, noteMediaUsageTypes));
+    }
   }, [noteQuery.data]);
 
   function update<K extends keyof NotePayload>(field: K, value: NotePayload[K]) {
@@ -55,7 +98,7 @@ export function NoteFormPage() {
 
   function submit(status?: ContentStatus) {
     setNotice(null);
-    saveMutation.mutate(status ? { ...form, status } : form);
+    saveMutation.mutate({ payload: status ? { ...form, status } : form, media: mediaSelection });
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -107,6 +150,13 @@ export function NoteFormPage() {
           <TextArea label="Excerpt" value={form.excerpt} onChange={(value) => update("excerpt", value)} required />
           <TextArea label="Markdown content" value={form.content} onChange={(value) => update("content", value)} required rows={10} />
         </fieldset>
+
+        <MediaAttachmentPicker
+          token={requireToken(session?.accessToken)}
+          slots={noteMediaSlots}
+          value={mediaSelection}
+          onChange={setMediaSelection}
+        />
 
         <fieldset>
           <legend>Relations</legend>

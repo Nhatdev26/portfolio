@@ -2,6 +2,7 @@ package com.example.portfolio.content.dto;
 
 import com.example.portfolio.content.ContentLanguage;
 import com.example.portfolio.content.ContentStatus;
+import com.example.portfolio.media.dto.MediaEntityAssetResponse;
 import com.example.portfolio.taxonomy.dto.CategoryResponse;
 import com.example.portfolio.taxonomy.dto.TagResponse;
 import com.example.portfolio.taxonomy.dto.TechnologyResponse;
@@ -23,4 +24,5 @@ public record NoteResponse(
         Instant publishedAt,
         int displayOrder,
         List<TechnologyResponse> technologies,
-        List<TagResponse> tags) {}
+        List<TagResponse> tags,
+        List<MediaEntityAssetResponse> media) {}

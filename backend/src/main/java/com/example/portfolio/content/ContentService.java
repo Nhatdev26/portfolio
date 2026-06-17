@@ -7,6 +7,8 @@ import com.example.portfolio.content.dto.NoteResponse;
 import com.example.portfolio.content.dto.NoteSummaryResponse;
 import com.example.portfolio.content.dto.ProjectRequest;
 import com.example.portfolio.content.dto.ProjectResponse;
+import com.example.portfolio.media.MediaEntityType;
+import com.example.portfolio.media.MediaService;
 import com.example.portfolio.note.TechnicalNote;
 import com.example.portfolio.note.TechnicalNoteRepository;
 import com.example.portfolio.project.Project;
@@ -44,6 +46,7 @@ public class ContentService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private final TechnologyRepository technologyRepository;
+    private final MediaService mediaService;
     private final AuditService auditService;
     private final Clock clock;
 
@@ -53,6 +56,7 @@ public class ContentService {
             CategoryRepository categoryRepository,
             TagRepository tagRepository,
             TechnologyRepository technologyRepository,
+            MediaService mediaService,
             AuditService auditService,
             Clock clock) {
         this.projectRepository = projectRepository;
@@ -60,6 +64,7 @@ public class ContentService {
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.technologyRepository = technologyRepository;
+        this.mediaService = mediaService;
         this.auditService = auditService;
         this.clock = clock;
     }
@@ -377,7 +382,8 @@ public class ContentService {
                 project.displayOrder,
                 project.technologies.stream().map(this::toTechnologyResponse).toList(),
                 project.tags.stream().map(this::toTagResponse).toList(),
-                project.notes.stream().map(this::toNoteSummaryResponse).toList());
+                project.notes.stream().map(this::toNoteSummaryResponse).toList(),
+                mediaService.listEntityMedia(MediaEntityType.PROJECT, project.id, false));
     }
 
     private ProjectResponse toPublicProjectResponse(Project project) {
@@ -414,7 +420,8 @@ public class ContentService {
                 project.notes.stream()
                         .filter(note -> note.status == ContentStatus.PUBLISHED && note.deletedAt == null)
                         .map(this::toNoteSummaryResponse)
-                        .toList());
+                        .toList(),
+                mediaService.listEntityMedia(MediaEntityType.PROJECT, project.id, true));
     }
 
     private NoteResponse toNoteResponse(TechnicalNote note) {
@@ -433,7 +440,8 @@ public class ContentService {
                 note.publishedAt,
                 note.displayOrder,
                 note.technologies.stream().map(this::toTechnologyResponse).toList(),
-                note.tags.stream().map(this::toTagResponse).toList());
+                note.tags.stream().map(this::toTagResponse).toList(),
+                mediaService.listEntityMedia(MediaEntityType.TECHNICAL_NOTE, note.id, false));
     }
 
     private NoteResponse toPublicNoteResponse(TechnicalNote note) {
@@ -458,7 +466,8 @@ public class ContentService {
                 note.tags.stream()
                         .filter(tag -> tag.status == TaxonomyStatus.ACTIVE && tag.deletedAt == null)
                         .map(this::toTagResponse)
-                        .toList());
+                        .toList(),
+                mediaService.listEntityMedia(MediaEntityType.TECHNICAL_NOTE, note.id, true));
     }
 
     private NoteSummaryResponse toNoteSummaryResponse(TechnicalNote note) {
