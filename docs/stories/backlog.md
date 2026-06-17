@@ -9,7 +9,7 @@ product decision needs a durable place to land.
 | Epic | Description | Status |
 | --- | --- | --- |
 | E01 Foundation | Full-stack project foundation, tooling, Docker Compose, and validation setup. | active |
-| E02 Auth And Admin Shell | Admin login, JWT access tokens, refresh tokens, protected admin shell. | unsliced |
+| E02 Auth And Admin Shell | Admin login, JWT access tokens, refresh tokens, protected admin shell. | active |
 | E03 Profile And CV | Profile, social links, CV upload, active CV rule, public profile display. | unsliced |
 | E04 Taxonomy And Technologies | Categories, tags, technologies, and skill groups. | unsliced |
 | E05 Projects And Notes | Project CMS, technical notes CMS, publishing workflow, markdown rendering. | unsliced |

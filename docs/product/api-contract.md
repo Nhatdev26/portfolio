@@ -85,3 +85,10 @@ The foundation scaffold exposes:
 
 This is a local smoke endpoint only. It is not a final public product API.
 
+## Current Phase 2 Auth Foundation
+
+The auth foundation adds admin user persistence and refresh-token storage only.
+It does not expose login, refresh, logout, or `/auth/me` endpoints yet.
+
+Spring Security is present, but route protection remains a later story so the
+Phase 1 smoke contract stays unchanged while the auth data model is introduced.
