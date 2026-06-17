@@ -68,6 +68,12 @@ time, activation time, and status. Uploads are DRAFT by default. Activation
 marks the selected CV ACTIVE and archives any other ACTIVE CV for the same
 language and target role.
 
+Media assets own uploaded bytes, original filename, content type, file size,
+title, alt text, caption, READY/DELETED/FAILED status, PUBLIC/PRIVATE
+visibility, upload time, and soft-delete timestamp. Media usages attach READY
+assets to PROJECT, TECHNICAL_NOTE, TECHNOLOGY, or PROFILE entities with a
+specific usage type. Used media cannot be deleted until usages are detached.
+
 ## Relationship Tables
 
 - project_technologies
@@ -119,4 +125,6 @@ Public APIs must not return:
 - Category, tag, technology, and skill-group slugs are unique among non-deleted
   records.
 - CV uploads accept only PDF files up to 5 MB.
+- Media uploads accept JPEG, PNG, WebP, GIF, SVG, and PDF files up to 10 MB.
+- Media assets with usage records are delete-protected.
 - Audit logs are read-only and never exposed by public APIs.

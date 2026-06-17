@@ -110,6 +110,9 @@ Media and audit:
 - `GET /api/admin/media-assets`
 - `PUT /api/admin/media-assets/{id}`
 - `DELETE /api/admin/media-assets/{id}`
+- `GET /api/admin/media-assets/{id}/content`
+- `POST /api/admin/media-assets/{id}/usages`
+- `DELETE /api/admin/media-assets/{id}/usages/{usageId}`
 - `GET /api/admin/audit-logs`
 
 Audit log filters:
@@ -202,3 +205,18 @@ supports filters by action, entity type, actor email, and date range.
 Audit logs are not exposed through public APIs. Audit payloads store safe JSONB
 summaries only; passwords, tokens, secrets, and authorization values are
 redacted before persistence.
+
+## Current Phase 6 Media Library
+
+The media library story exposes admin upload, listing, metadata editing,
+content preview, usage attachment, usage detachment, and delete protection
+through `/api/admin/media-assets`.
+
+Admin media upload accepts JPEG, PNG, WebP, GIF, SVG, and PDF files up to
+10 MB. Upload creates a READY media asset. Metadata updates can change title,
+alt text, caption, and PUBLIC or PRIVATE visibility. Delete is soft delete and
+is blocked with HTTP 409 when the media asset has usage records.
+
+Public media bytes are available through
+`GET /public/media-assets/{id}/content` only when the asset is READY, PUBLIC,
+and not soft deleted. There is no public media listing endpoint.
