@@ -105,9 +105,17 @@ State rules:
 - TanStack Query owns server state.
 - React Hook Form owns form state.
 - Zod owns input validation.
-- Auth state will be added in the auth feature slice.
+- Auth state lives in the auth feature slice.
 - Public API calls do not attach tokens.
-- Admin API calls attach tokens only after login support exists.
+- Admin API calls attach tokens after login support exists.
+
+Current auth/session behavior:
+
+- The backend issues signed JWT access tokens and opaque refresh tokens.
+- Refresh token hashes are stored in PostgreSQL.
+- The frontend stores the local MVP session in browser local storage.
+- Production hardening should revisit HTTP-only cookies, CSRF policy, and API
+  route separation for backend admin APIs.
 
 ## Validation Ladder
 
@@ -121,4 +129,3 @@ Expected future ladder:
 - Integration: backend starts against PostgreSQL and Flyway migrates.
 - E2E: browser smoke for public home, admin login, protected admin route.
 - Platform: `docker compose up --build` starts database, backend, and frontend.
-

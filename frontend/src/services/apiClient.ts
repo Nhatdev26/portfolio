@@ -50,10 +50,14 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
 export const publicApi = {
   get: <T>(path: string, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: "GET" })
+    request<T>(path, { ...options, method: "GET" }),
+  post: <T>(path: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(path, { ...options, body, method: "POST" })
 };
 
 export const adminApi = {
   get: <T>(path: string, token: string, options?: RequestOptions) =>
-    request<T>(path, { ...options, method: "GET", token })
+    request<T>(path, { ...options, method: "GET", token }),
+  post: <T>(path: string, token: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(path, { ...options, body, method: "POST", token })
 };

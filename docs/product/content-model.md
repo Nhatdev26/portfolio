@@ -32,6 +32,9 @@ User records are CMS/admin accounts only. Public visitors are never stored in
 Refresh tokens store token hashes only. Raw refresh tokens must not be
 persisted.
 
+Refresh-token rotation revokes the old token and persists a new token hash.
+Logout revokes the presented refresh token.
+
 ## Relationship Tables
 
 - project_technologies

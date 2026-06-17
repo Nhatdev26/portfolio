@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 
+import { RequireAuth } from "../features/auth/AuthProvider";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
@@ -30,19 +31,24 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <RequireAuth />,
     children: [
-      { index: true, element: <AdminDashboardPage /> },
-      { path: "profile", element: <PlaceholderPage title="Profile CMS" /> },
-      { path: "projects", element: <PlaceholderPage title="Projects CMS" /> },
-      { path: "notes", element: <PlaceholderPage title="Notes CMS" /> },
-      { path: "technologies", element: <PlaceholderPage title="Technologies CMS" /> },
-      { path: "categories", element: <PlaceholderPage title="Categories CMS" /> },
-      { path: "tags", element: <PlaceholderPage title="Tags CMS" /> },
-      { path: "skill-groups", element: <PlaceholderPage title="Skill groups CMS" /> },
-      { path: "cv-files", element: <PlaceholderPage title="CV files CMS" /> },
-      { path: "media", element: <PlaceholderPage title="Media library" /> },
-      { path: "audit-logs", element: <PlaceholderPage title="Audit logs" /> }
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminDashboardPage /> },
+          { path: "profile", element: <PlaceholderPage title="Profile CMS" /> },
+          { path: "projects", element: <PlaceholderPage title="Projects CMS" /> },
+          { path: "notes", element: <PlaceholderPage title="Notes CMS" /> },
+          { path: "technologies", element: <PlaceholderPage title="Technologies CMS" /> },
+          { path: "categories", element: <PlaceholderPage title="Categories CMS" /> },
+          { path: "tags", element: <PlaceholderPage title="Tags CMS" /> },
+          { path: "skill-groups", element: <PlaceholderPage title="Skill groups CMS" /> },
+          { path: "cv-files", element: <PlaceholderPage title="CV files CMS" /> },
+          { path: "media", element: <PlaceholderPage title="Media library" /> },
+          { path: "audit-logs", element: <PlaceholderPage title="Audit logs" /> }
+        ]
+      }
     ]
   },
   {
@@ -50,4 +56,3 @@ export const router = createBrowserRouter([
     element: <NotFoundPage />
   }
 ]);
-
