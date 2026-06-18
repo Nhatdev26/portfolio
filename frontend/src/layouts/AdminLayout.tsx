@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 
+import { Seo } from "../components/common/Seo";
 import { useAuth } from "../features/auth/AuthProvider";
 
 const adminLinks = [
@@ -20,6 +21,7 @@ export function AdminLayout() {
 
   return (
     <div className="admin-shell">
+      <Seo title="CMS Admin" description="Private Portfolio CMS admin dashboard." noIndex />
       <aside className="admin-sidebar">
         <NavLink className="brand" to="/admin">
           CMS Admin

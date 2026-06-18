@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { getPublicProject } from "../../services/content";
 
 export function ProjectDetailPage() {
@@ -14,6 +15,12 @@ export function ProjectDetailPage() {
 
   return (
     <section className="public-detail">
+      <Seo
+        title={project?.seoTitle ?? project?.title ?? "Project"}
+        description={project?.seoDescription ?? project?.summary ?? "Published project case study from the portfolio."}
+        canonicalPath={slug ? `/projects/${slug}` : "/projects"}
+        type="article"
+      />
       {projectQuery.isLoading && <p className="muted">Loading project...</p>}
       {projectQuery.isError && <p className="form-error">Project could not be loaded.</p>}
       {project && (

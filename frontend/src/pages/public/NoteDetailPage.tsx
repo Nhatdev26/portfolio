@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { getPublicNote } from "../../services/content";
 
 export function NoteDetailPage() {
@@ -14,6 +15,12 @@ export function NoteDetailPage() {
 
   return (
     <article className="public-detail">
+      <Seo
+        title={note?.seoTitle ?? note?.title ?? "Blog post"}
+        description={note?.seoDescription ?? note?.excerpt ?? "Technical note from the portfolio blog."}
+        canonicalPath={slug ? `/notes/${slug}` : "/notes"}
+        type="article"
+      />
       {noteQuery.isLoading && <p className="muted">Loading blog post...</p>}
       {noteQuery.isError && <p className="form-error">Blog post could not be loaded.</p>}
       {note && (

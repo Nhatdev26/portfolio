@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { useAuth } from "../../features/auth/AuthProvider";
 
 export function LoginPage() {
@@ -37,6 +38,7 @@ export function LoginPage() {
 
   return (
     <main className="auth-page">
+      <Seo title="Admin Login" description="Sign in to the private Portfolio CMS admin dashboard." noIndex />
       <section className="auth-panel">
         <p className="eyebrow">Admin</p>
         <h1>Sign in</h1>

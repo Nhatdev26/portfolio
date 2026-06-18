@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { getPublicTechnologies, type Technology } from "../../services/taxonomy";
 
 const typeLabels: Record<Technology["type"], string> = {
@@ -25,6 +26,11 @@ export function SkillsPage() {
 
   return (
     <section className="public-index skills-page">
+      <Seo
+        title="Skills"
+        description="Explore the active technologies, frameworks, databases, and delivery tools behind this backend developer portfolio."
+        canonicalPath="/skills"
+      />
       <div className="section-heading">
         <p className="eyebrow">Skills</p>
         <h1>Tools I use to ship reliable web systems</h1>
