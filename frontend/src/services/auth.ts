@@ -30,6 +30,10 @@ export function getCurrentUser(accessToken: string) {
   return adminApi.get<CurrentUser>("/auth/me", accessToken);
 }
 
+export function refreshAdmin(refreshToken: string) {
+  return publicApi.post<AuthResponse>("/auth/refresh", { refreshToken });
+}
+
 export function logoutAdmin(refreshToken: string) {
   return publicApi.post<LogoutResponse>("/auth/logout", { refreshToken });
 }
