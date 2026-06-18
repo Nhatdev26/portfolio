@@ -12,14 +12,14 @@ export function NotesPage() {
   return (
     <section className="public-index">
       <div className="section-heading">
-        <p className="eyebrow">Technical writing</p>
-        <h1>Notes</h1>
+        <p className="eyebrow">Blog</p>
+        <h1>Technical writing</h1>
       </div>
-      {notesQuery.isError && <p className="form-error">Notes could not be loaded.</p>}
+      {notesQuery.isError && <p className="form-error">Blog posts could not be loaded.</p>}
       {notesQuery.isLoading ? (
-        <p className="muted">Loading notes...</p>
+        <p className="muted">Loading blog posts...</p>
       ) : !notesQuery.data?.length ? (
-        <p className="muted">Published notes will appear here.</p>
+        <p className="muted">Published blog posts will appear here.</p>
       ) : (
         <div className="public-grid">
           {notesQuery.data.map((note) => (

@@ -14,11 +14,11 @@ export function NoteDetailPage() {
 
   return (
     <article className="public-detail">
-      {noteQuery.isLoading && <p className="muted">Loading note...</p>}
-      {noteQuery.isError && <p className="form-error">Note could not be loaded.</p>}
+      {noteQuery.isLoading && <p className="muted">Loading blog post...</p>}
+      {noteQuery.isError && <p className="form-error">Blog post could not be loaded.</p>}
       {note && (
         <>
-          <p className="eyebrow">{note.category?.name ?? "Technical note"} · {note.readingMinutes} min</p>
+          <p className="eyebrow">{note.category?.name ?? "Blog"} · {note.readingMinutes} min</p>
           <h1>{note.title}</h1>
           <p className="lead-text">{note.excerpt}</p>
           <div className="chip-row">
