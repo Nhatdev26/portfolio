@@ -15,6 +15,7 @@ scripts/bin/harness-cli.exe
 .env
 .env.*
 !.env.example
+!.env.production.example
 !backend/.env.example
 
 # Backend build output.
