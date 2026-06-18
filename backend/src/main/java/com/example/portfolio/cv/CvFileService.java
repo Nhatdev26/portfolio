@@ -81,6 +81,7 @@ public class CvFileService {
                         cvFileRepository.save(existing);
                     }
                 });
+        cvFileRepository.flush();
         cvFile.status = CvFileStatus.ACTIVE;
         cvFile.activatedAt = now;
         CvFileResponse response = toResponse(cvFileRepository.save(cvFile));
