@@ -31,6 +31,7 @@ services:
       AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-dev-only-change-me-please-use-a-real-32-byte-secret}
       AUTH_ACCESS_TOKEN_MINUTES: ${AUTH_ACCESS_TOKEN_MINUTES:-15}
       AUTH_REFRESH_TOKEN_DAYS: ${AUTH_REFRESH_TOKEN_DAYS:-14}
+      FILE_STORAGE_PATH: ${FILE_STORAGE_PATH:-}
     depends_on:
       db:
         condition: service_healthy
