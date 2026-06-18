@@ -15,6 +15,11 @@ MVP.
 
 ## Local Verification
 
+The same release path is also encoded in GitHub Actions at
+`.github/workflows/ci.yml`. Pull requests and pushes to `main` run backend
+tests, frontend typecheck/build, production env template validation, and Docker
+Compose smoke.
+
 Run the backend suite:
 
 ```powershell
@@ -64,3 +69,4 @@ After the stack is running:
 - Draft/unpublished content is not public.
 - CV/media bytes are stored in PostgreSQL for this MVP.
 - Real secrets must live outside the repository.
+- CI is required before merging release changes to `main`.
