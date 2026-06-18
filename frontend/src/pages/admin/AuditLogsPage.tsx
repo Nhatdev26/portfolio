@@ -22,7 +22,12 @@ const actions = [
   "CV_UPLOAD",
   "CV_ACTIVATE",
   "CV_ARCHIVE",
-  "CV_DELETE"
+  "CV_DELETE",
+  "MEDIA_UPLOAD",
+  "MEDIA_UPDATE",
+  "MEDIA_DELETE",
+  "MEDIA_USAGE_ATTACH",
+  "MEDIA_USAGE_DETACH"
 ];
 
 const entityTypes = [
@@ -34,7 +39,8 @@ const entityTypes = [
   "TAG",
   "TECHNOLOGY",
   "SKILL_GROUP",
-  "CV_FILE"
+  "CV_FILE",
+  "MEDIA_ASSET"
 ];
 
 export function AuditLogsPage() {

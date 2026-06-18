@@ -7,6 +7,7 @@ import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
 import { AuditLogsPage } from "../pages/admin/AuditLogsPage";
 import { CvFilesPage } from "../pages/admin/CvFilesPage";
 import { LoginPage } from "../pages/admin/LoginPage";
+import { MediaLibraryPage } from "../pages/admin/MediaLibraryPage";
 import { NoteFormPage } from "../pages/admin/NoteFormPage";
 import { NoteListPage } from "../pages/admin/NoteListPage";
 import { ProfilePage } from "../pages/admin/ProfilePage";
@@ -14,7 +15,6 @@ import { ProjectFormPage } from "../pages/admin/ProjectFormPage";
 import { ProjectListPage } from "../pages/admin/ProjectListPage";
 import { TaxonomyPage } from "../pages/admin/TaxonomyPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
-import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { AboutPage } from "../pages/public/AboutPage";
 import { CvPage } from "../pages/public/CvPage";
 import { HomePage } from "../pages/public/HomePage";
@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
           { path: "tags", element: <TaxonomyPage section="tags" /> },
           { path: "skill-groups", element: <TaxonomyPage section="skill-groups" /> },
           { path: "cv-files", element: <CvFilesPage /> },
-          { path: "media", element: <PlaceholderPage title="Media library" /> },
+          { path: "media", element: <MediaLibraryPage /> },
           { path: "audit-logs", element: <AuditLogsPage /> }
         ]
       }
