@@ -33,38 +33,40 @@ export function NoteListPage() {
       ) : !notesQuery.data?.length ? (
         <p className="muted">No notes yet.</p>
       ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Note</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {notesQuery.data.map((note) => (
-              <tr key={note.id}>
-                <td>
-                  <strong>{note.title}</strong>
-                  <span>{note.slug} · {note.language}</span>
-                </td>
-                <td>{note.category?.name ?? "None"}</td>
-                <td>{note.status}</td>
-                <td>
-                  <div className="table-actions">
-                    <Link to={`/admin/notes/${note.id}/edit`}>Edit</Link>
-                    {note.id !== null && note.status !== "ARCHIVED" && (
-                      <button type="button" onClick={() => archiveMutation.mutate(note.id as number)}>
-                        Archive
-                      </button>
-                    )}
-                  </div>
-                </td>
+        <div className="data-region" aria-live="polite">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Note</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {notesQuery.data.map((note) => (
+                <tr key={note.id}>
+                  <td>
+                    <strong>{note.title}</strong>
+                    <span>{note.slug} · {note.language}</span>
+                  </td>
+                  <td>{note.category?.name ?? "None"}</td>
+                  <td>{note.status}</td>
+                  <td>
+                    <div className="table-actions">
+                      <Link to={`/admin/notes/${note.id}/edit`}>Edit</Link>
+                      {note.id !== null && note.status !== "ARCHIVED" && (
+                        <button type="button" onClick={() => archiveMutation.mutate(note.id as number)}>
+                          Archive
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

@@ -33,38 +33,40 @@ export function ProjectListPage() {
       ) : !projectsQuery.data?.length ? (
         <p className="muted">No projects yet.</p>
       ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th>Status</th>
-              <th>Technologies</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projectsQuery.data.map((project) => (
-              <tr key={project.id}>
-                <td>
-                  <strong>{project.title}</strong>
-                  <span>{project.slug} · {project.language}</span>
-                </td>
-                <td>{project.contentStatus}</td>
-                <td>{project.technologies.map((technology) => technology.name).join(", ") || "None"}</td>
-                <td>
-                  <div className="table-actions">
-                    <Link to={`/admin/projects/${project.id}/edit`}>Edit</Link>
-                    {project.id !== null && project.contentStatus !== "ARCHIVED" && (
-                      <button type="button" onClick={() => archiveMutation.mutate(project.id as number)}>
-                        Archive
-                      </button>
-                    )}
-                  </div>
-                </td>
+        <div className="data-region" aria-live="polite">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Status</th>
+                <th>Technologies</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {projectsQuery.data.map((project) => (
+                <tr key={project.id}>
+                  <td>
+                    <strong>{project.title}</strong>
+                    <span>{project.slug} · {project.language}</span>
+                  </td>
+                  <td>{project.contentStatus}</td>
+                  <td>{project.technologies.map((technology) => technology.name).join(", ") || "None"}</td>
+                  <td>
+                    <div className="table-actions">
+                      <Link to={`/admin/projects/${project.id}/edit`}>Edit</Link>
+                      {project.id !== null && project.contentStatus !== "ARCHIVED" && (
+                        <button type="button" onClick={() => archiveMutation.mutate(project.id as number)}>
+                          Archive
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );
