@@ -92,8 +92,12 @@ export function HomePage() {
 
       <section className="home-section">
         <div className="section-heading centered">
-          <p className="eyebrow">What I build</p>
-          <h2>Practical systems with a polished face</h2>
+          <p className="eyebrow">About</p>
+          <h2>{profile.data?.displayName ?? "Backend developer with a full-stack delivery mindset"}</h2>
+          <p className="lead-text">
+            {profile.data?.shortBio ??
+              "I build backend-heavy products with clear APIs, secure admin workflows, reliable data models, and public experiences that are easy to inspect."}
+          </p>
         </div>
         <div className="focus-grid">
           {focusAreas.map((area) => (
@@ -103,30 +107,6 @@ export function HomePage() {
               <p>{area.text}</p>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section className="home-section split-showcase">
-        <div>
-          <p className="eyebrow">Selected work</p>
-          <h2>Projects</h2>
-          <p className="muted">Published case studies from the CMS appear here automatically.</p>
-          <Link className="button-link" to="/projects">Explore projects</Link>
-        </div>
-        <div className="mini-list">
-          {(projects.data ?? []).slice(0, 3).map((project) => (
-            <Link className="mini-card" key={project.slug} to={`/projects/${project.slug}`}>
-              <span>{project.projectType}</span>
-              <strong>{project.title}</strong>
-              <small>{project.summary}</small>
-            </Link>
-          ))}
-          {!projects.isLoading && !projects.data?.length && (
-            <div className="mini-card empty-card">
-              <strong>Projects are coming online</strong>
-              <small>Publish a project in the CMS to feature it here.</small>
-            </div>
-          )}
         </div>
       </section>
 
@@ -149,6 +129,30 @@ export function HomePage() {
             <div className="mini-card empty-card">
               <strong>Skills are waiting</strong>
               <small>Publish technologies in the CMS to fill this section.</small>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="home-section split-showcase">
+        <div>
+          <p className="eyebrow">Selected work</p>
+          <h2>Projects</h2>
+          <p className="muted">Published case studies from the CMS appear here automatically.</p>
+          <Link className="button-link" to="/projects">Explore projects</Link>
+        </div>
+        <div className="mini-list">
+          {(projects.data ?? []).slice(0, 3).map((project) => (
+            <Link className="mini-card" key={project.slug} to={`/projects/${project.slug}`}>
+              <span>{project.projectType}</span>
+              <strong>{project.title}</strong>
+              <small>{project.summary}</small>
+            </Link>
+          ))}
+          {!projects.isLoading && !projects.data?.length && (
+            <div className="mini-card empty-card">
+              <strong>Projects are coming online</strong>
+              <small>Publish a project in the CMS to feature it here.</small>
             </div>
           )}
         </div>
