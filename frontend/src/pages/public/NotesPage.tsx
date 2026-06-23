@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { listPublicNotes } from "../../services/content";
 
 export function NotesPage() {
@@ -11,6 +12,11 @@ export function NotesPage() {
 
   return (
     <section className="public-index">
+      <Seo
+        title="Blog"
+        description="Read technical notes about backend systems, Spring Boot, PostgreSQL, React, and delivery lessons."
+        canonicalPath="/notes"
+      />
       <div className="section-heading">
         <p className="eyebrow">Blog</p>
         <h1>Technical writing</h1>

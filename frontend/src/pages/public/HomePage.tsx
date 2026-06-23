@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { getBackendHealth } from "../../services/health";
 import { getPublicProfile } from "../../services/profile";
 import { listPublicNotes, listPublicProjects } from "../../services/content";
@@ -52,6 +53,12 @@ export function HomePage() {
 
   return (
     <>
+      <Seo
+        title={heroTitle}
+        description={heroText}
+        canonicalPath="/"
+        type="profile"
+      />
       <section className="hero-section portfolio-hero">
         <div className="hero-copy reveal-in">
           <p className="eyebrow">{profile.data?.primaryRole ?? "Backend Developer Portfolio"}</p>

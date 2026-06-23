@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { listPublicProjects } from "../../services/content";
 
 export function ProjectsPage() {
@@ -11,6 +12,11 @@ export function ProjectsPage() {
 
   return (
     <section className="public-index">
+      <Seo
+        title="Projects"
+        description="Browse published backend and full-stack projects with technologies, case studies, and implementation notes."
+        canonicalPath="/projects"
+      />
       <div className="section-heading">
         <p className="eyebrow">Selected work</p>
         <h1>Projects</h1>

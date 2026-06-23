@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
+import { Seo } from "../../components/common/Seo";
 import { getPublicTechnology } from "../../services/taxonomy";
 
 export function TechnologyDetailPage() {
@@ -14,6 +15,15 @@ export function TechnologyDetailPage() {
 
   return (
     <section className="public-detail">
+      <Seo
+        title={technology?.name ?? "Technology"}
+        description={
+          technology?.description ??
+          technology?.howIUseIt ??
+          "Technology detail from the portfolio skill map."
+        }
+        canonicalPath={slug ? `/technologies/${slug}` : "/skills"}
+      />
       {technologyQuery.isLoading && <p className="muted">Loading technology...</p>}
       {technologyQuery.isError && <p className="form-error">Technology could not be loaded.</p>}
       {technology && (
