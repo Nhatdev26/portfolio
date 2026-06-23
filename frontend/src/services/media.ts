@@ -35,6 +35,22 @@ export type MediaAsset = {
   usages: MediaUsage[];
 };
 
+export type EntityMediaAsset = {
+  usageId: number;
+  mediaAssetId: number;
+  usageType: MediaUsageType;
+  originalFilename: string;
+  contentType: string;
+  title: string;
+  altText: string | null;
+  caption: string | null;
+  status: MediaAssetStatus;
+  visibility: MediaVisibility;
+  uploadedAt: string;
+};
+
+export type MediaSelection = Partial<Record<MediaUsageType, number[]>>;
+
 export type MediaAssetUpdateInput = {
   title: string;
   altText: string;
@@ -72,6 +88,22 @@ export async function deleteMediaAsset(token: string, id: number) {
   return adminApi.delete<void>(`/api/admin/media-assets/${id}`, token);
 }
 
+export async function attachMediaUsage(
+  token: string,
+  mediaAssetId: number,
+  input: {
+    entityType: MediaEntityType;
+    entityId: number;
+    usageType: MediaUsageType;
+  }
+) {
+  return adminApi.post<MediaUsage>(`/api/admin/media-assets/${mediaAssetId}/usages`, token, input);
+}
+
+export async function detachMediaUsage(token: string, mediaAssetId: number, usageId: number) {
+  return adminApi.delete<void>(`/api/admin/media-assets/${mediaAssetId}/usages/${usageId}`, token);
+}
+
 export async function fetchMediaAssetObjectUrl(token: string, id: number) {
   const response = await fetch(`${API_BASE_URL}/api/admin/media-assets/${id}/content`, {
     headers: {
@@ -82,4 +114,55 @@ export async function fetchMediaAssetObjectUrl(token: string, id: number) {
     throw new Error("Media preview could not be loaded.");
   }
   return URL.createObjectURL(await response.blob());
+}
+
+export function publicMediaAssetUrl(id: number) {
+  return `${API_BASE_URL}/public/media-assets/${id}/content`;
+}
+
+export function mediaSelectionFromEntity(media: EntityMediaAsset[], usageTypes: MediaUsageType[]): MediaSelection {
+  const usageTypeSet = new Set(usageTypes);
+  return media.reduce<MediaSelection>((selection, asset) => {
+    if (!usageTypeSet.has(asset.usageType)) return selection;
+    return {
+      ...selection,
+      [asset.usageType]: [...(selection[asset.usageType] ?? []), asset.mediaAssetId]
+    };
+  }, {});
+}
+
+export async function syncMediaUsages(
+  token: string,
+  entityType: MediaEntityType,
+  entityId: number,
+  currentMedia: EntityMediaAsset[],
+  desiredSelection: MediaSelection,
+  usageTypes: MediaUsageType[]
+) {
+  const usageTypeSet = new Set(usageTypes);
+  const desiredPairs = new Set(
+    usageTypes.flatMap((usageType) =>
+      (desiredSelection[usageType] ?? []).map((mediaAssetId) => `${usageType}:${mediaAssetId}`)
+    )
+  );
+  const currentPairs = new Set(
+    currentMedia
+      .filter((asset) => usageTypeSet.has(asset.usageType))
+      .map((asset) => `${asset.usageType}:${asset.mediaAssetId}`)
+  );
+
+  await Promise.all(
+    currentMedia
+      .filter((asset) => usageTypeSet.has(asset.usageType))
+      .filter((asset) => !desiredPairs.has(`${asset.usageType}:${asset.mediaAssetId}`))
+      .map((asset) => detachMediaUsage(token, asset.mediaAssetId, asset.usageId))
+  );
+
+  await Promise.all(
+    usageTypes.flatMap((usageType) =>
+      (desiredSelection[usageType] ?? [])
+        .filter((mediaAssetId) => !currentPairs.has(`${usageType}:${mediaAssetId}`))
+        .map((mediaAssetId) => attachMediaUsage(token, mediaAssetId, { entityType, entityId, usageType }))
+    )
+  );
 }

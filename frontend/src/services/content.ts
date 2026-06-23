@@ -1,4 +1,5 @@
 import { adminApi, publicApi } from "./apiClient";
+import type { EntityMediaAsset } from "./media";
 import type { Category, Tag, Technology } from "./taxonomy";
 
 export type ContentLanguage = "EN" | "VI";
@@ -45,6 +46,7 @@ export type Project = {
   technologies: Technology[];
   tags: Tag[];
   notes: NoteSummary[];
+  media: EntityMediaAsset[];
 };
 
 export type Note = {
@@ -63,15 +65,16 @@ export type Note = {
   displayOrder: number;
   technologies: Technology[];
   tags: Tag[];
+  media: EntityMediaAsset[];
 };
 
-export type ProjectPayload = Omit<Project, "technologies" | "tags" | "notes" | "publishedAt"> & {
+export type ProjectPayload = Omit<Project, "technologies" | "tags" | "notes" | "media" | "publishedAt"> & {
   technologyIds: number[];
   tagIds: number[];
   noteIds: number[];
 };
 
-export type NotePayload = Omit<Note, "category" | "technologies" | "tags" | "publishedAt"> & {
+export type NotePayload = Omit<Note, "category" | "technologies" | "tags" | "media" | "publishedAt"> & {
   categoryId: number | null;
   technologyIds: number[];
   tagIds: number[];

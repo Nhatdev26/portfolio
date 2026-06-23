@@ -6,10 +6,10 @@
 - `/about`
 - `/projects`
 - `/projects/:slug`
+- `/skills`
 - `/notes`
 - `/notes/:slug`
 - `/technologies/:slug`
-- `/cv`
 
 ## Admin Frontend Routes
 
@@ -196,6 +196,10 @@ Project slugs and note slugs are unique per language among non-deleted records.
 Publishing a project requires SEO fields and at least one ACTIVE technology.
 Publishing a technical note requires SEO fields and an ACTIVE category.
 
+Project and technical-note responses include `media` summaries for attached
+media usages. Public responses include only READY + PUBLIC media summaries; file
+bytes are still loaded through `/public/media-assets/{id}/content`.
+
 ## Current Phase 6 Audit Logs
 
 The audit story exposes read-only admin audit history through
@@ -220,3 +224,7 @@ is blocked with HTTP 409 when the media asset has usage records.
 Public media bytes are available through
 `GET /public/media-assets/{id}/content` only when the asset is READY, PUBLIC,
 and not soft deleted. There is no public media listing endpoint.
+
+Admin content forms reuse `POST /api/admin/media-assets/{id}/usages` and
+`DELETE /api/admin/media-assets/{id}/usages/{usageId}` to attach and detach
+media after a Project or Technical Note has been saved.

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MediaUsageRepository extends JpaRepository<MediaUsage, Long> {
     List<MediaUsage> findByMediaAssetIdOrderByCreatedAtDescIdDesc(Long mediaAssetId);
 
+    List<MediaUsage> findByEntityTypeAndEntityIdOrderByCreatedAtDescIdDesc(MediaEntityType entityType, Long entityId);
+
     boolean existsByMediaAssetId(Long mediaAssetId);
 
     Optional<MediaUsage> findByIdAndMediaAssetId(Long id, Long mediaAssetId);

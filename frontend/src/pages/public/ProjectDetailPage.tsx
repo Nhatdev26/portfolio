@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 
 import { getPublicProject } from "../../services/content";
+import { publicMediaAssetUrl, type EntityMediaAsset } from "../../services/media";
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
@@ -21,6 +22,7 @@ export function ProjectDetailPage() {
           <p className="eyebrow">{project.projectType} · {project.projectStatus}</p>
           <h1>{project.title}</h1>
           <p className="lead-text">{project.summary}</p>
+          <PublicMediaFigure asset={preferredMedia(project.media, "COVER_IMAGE")} />
           <div className="chip-row">
             {project.technologies.map((technology) => (
               <Link className="text-chip" key={technology.slug} to={`/technologies/${technology.slug}`}>
@@ -29,6 +31,10 @@ export function ProjectDetailPage() {
             ))}
             {project.tags.map((tag) => <span className="text-chip" key={tag.slug}>{tag.name}</span>)}
           </div>
+          <PublicMediaGallery
+            media={project.media.filter((asset) => asset.usageType === "SCREENSHOT" && asset.contentType.startsWith("image/"))}
+            title="Screenshots"
+          />
           <div className="article-body">
             <Section title="Role" text={project.role} />
             <Section title="Description" text={project.description} />
@@ -54,6 +60,37 @@ export function ProjectDetailPage() {
           )}
         </>
       )}
+    </section>
+  );
+}
+
+function preferredMedia(media: EntityMediaAsset[], usageType: EntityMediaAsset["usageType"]) {
+  return media.find((asset) => asset.usageType === usageType && asset.contentType.startsWith("image/")) ?? null;
+}
+
+function PublicMediaFigure({ asset }: { asset: EntityMediaAsset | null }) {
+  if (!asset) return null;
+  return (
+    <figure className="public-media-figure">
+      <img src={publicMediaAssetUrl(asset.mediaAssetId)} alt={asset.altText || asset.title} />
+      {asset.caption && <figcaption>{asset.caption}</figcaption>}
+    </figure>
+  );
+}
+
+function PublicMediaGallery({ media, title }: { media: EntityMediaAsset[]; title: string }) {
+  if (media.length === 0) return null;
+  return (
+    <section className="public-media-gallery" aria-label={title}>
+      <h2>{title}</h2>
+      <div>
+        {media.map((asset) => (
+          <figure key={asset.usageId}>
+            <img src={publicMediaAssetUrl(asset.mediaAssetId)} alt={asset.altText || asset.title} />
+            {asset.caption && <figcaption>{asset.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
     </section>
   );
 }

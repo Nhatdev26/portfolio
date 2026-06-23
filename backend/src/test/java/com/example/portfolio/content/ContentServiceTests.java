@@ -9,6 +9,10 @@ import com.example.portfolio.audit.AuditService;
 import com.example.portfolio.common.exception.ApiException;
 import com.example.portfolio.content.dto.NoteRequest;
 import com.example.portfolio.content.dto.ProjectRequest;
+import com.example.portfolio.media.MediaEntityType;
+import com.example.portfolio.media.MediaService;
+import com.example.portfolio.media.MediaUsageType;
+import com.example.portfolio.media.dto.MediaEntityAssetResponse;
 import com.example.portfolio.note.TechnicalNote;
 import com.example.portfolio.note.TechnicalNoteRepository;
 import com.example.portfolio.project.Project;
@@ -55,6 +59,9 @@ class ContentServiceTests {
     private TechnologyRepository technologyRepository;
 
     @Mock
+    private MediaService mediaService;
+
+    @Mock
     private AuditService auditService;
 
     private ContentService contentService;
@@ -67,6 +74,7 @@ class ContentServiceTests {
                 categoryRepository,
                 tagRepository,
                 technologyRepository,
+                mediaService,
                 auditService,
                 CLOCK);
     }
@@ -137,6 +145,39 @@ class ContentServiceTests {
         assertThat(response).hasSize(1);
         assertThat(response.getFirst().slug()).isEqualTo("portfolio-api");
         assertThat(response.getFirst().contentStatus()).isEqualTo(ContentStatus.PUBLISHED);
+    }
+
+    @Test
+    void publicProjectIncludesPublicMediaSummaries() {
+        Project project = new Project();
+        project.id = 1L;
+        project.title = "Portfolio API";
+        project.slug = "portfolio-api";
+        project.language = ContentLanguage.EN;
+        project.summary = "CMS backend";
+        project.role = "Backend";
+        project.contentStatus = ContentStatus.PUBLISHED;
+        when(projectRepository.findByContentStatusAndDeletedAtIsNullOrderByDisplayOrderAscPublishedAtDescIdDesc(
+                ContentStatus.PUBLISHED))
+                .thenReturn(List.of(project));
+        when(mediaService.listEntityMedia(MediaEntityType.PROJECT, 1L, true))
+                .thenReturn(List.of(new MediaEntityAssetResponse(
+                        50L,
+                        20L,
+                        MediaUsageType.COVER_IMAGE,
+                        "cover.png",
+                        "image/png",
+                        "Cover",
+                        "Cover alt",
+                        "Cover caption",
+                        com.example.portfolio.media.MediaAssetStatus.READY,
+                        com.example.portfolio.media.MediaVisibility.PUBLIC,
+                        CLOCK.instant())));
+
+        var response = contentService.listPublicProjects();
+
+        assertThat(response.getFirst().media()).hasSize(1);
+        assertThat(response.getFirst().media().getFirst().usageType()).isEqualTo(MediaUsageType.COVER_IMAGE);
     }
 
     private ProjectRequest projectRequest(

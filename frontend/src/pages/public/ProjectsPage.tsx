@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 import { listPublicProjects } from "../../services/content";
+import { publicMediaAssetUrl, type EntityMediaAsset } from "../../services/media";
 
 export function ProjectsPage() {
   const projectsQuery = useQuery({
@@ -24,6 +25,7 @@ export function ProjectsPage() {
         <div className="public-grid">
           {projectsQuery.data.map((project) => (
             <article className="public-card" key={project.id}>
+              <PublicMediaImage asset={preferredMedia(project.media, "COVER_IMAGE")} className="public-card-media" />
               <p className="card-meta">{project.projectType} · {project.projectStatus}</p>
               <h2><Link to={`/projects/${project.slug}`}>{project.title}</Link></h2>
               <p>{project.summary}</p>
@@ -40,4 +42,19 @@ export function ProjectsPage() {
       )}
     </section>
   );
+}
+
+function preferredMedia(media: EntityMediaAsset[], usageType: EntityMediaAsset["usageType"]) {
+  return media.find((asset) => asset.usageType === usageType && asset.contentType.startsWith("image/")) ?? null;
+}
+
+function PublicMediaImage({
+  asset,
+  className
+}: {
+  asset: EntityMediaAsset | null;
+  className: string;
+}) {
+  if (!asset) return null;
+  return <img className={className} src={publicMediaAssetUrl(asset.mediaAssetId)} alt={asset.altText || asset.title} />;
 }
